@@ -1,4 +1,4 @@
-// Database Types for Studio GCU
+// Database Types for Cinezham
 
 export interface Package {
     id: string

@@ -7,7 +7,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     {/* Brand */}
                     <div>
-                        <h3 className="text-2xl font-bold mb-4">STUDIO GCU</h3>
+                        <h3 className="text-2xl font-bold mb-4">CINEZHAM</h3>
                         <p className="text-muted-foreground">
                             Cinematic storytelling for your most memorable moments.
                         </p>
@@ -54,7 +54,7 @@ export default function Footer() {
 
                 {/* Copyright */}
                 <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-                    <p>&copy; {new Date().getFullYear()} Studio GCU. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} Cinezham. All rights reserved.</p>
                 </div>
             </div>
         </footer>
