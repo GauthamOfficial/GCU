@@ -12,11 +12,13 @@ import { Check } from 'lucide-react'
 
 const occasionTypes = [
     'Birthday',
-    'Pre-Wedding Shoot',
-    'Traditional Ceremony',
-    'Anniversary',
-    'Graduation',
-    'Family Event',
+    'Pre-shoot',
+    'Traditional',
+    'Event',
+    'Music Video',
+    'Travel Highlights',
+    'Wedding Highlights',
+    'Promotion Videos',
     'Other',
 ]
 
