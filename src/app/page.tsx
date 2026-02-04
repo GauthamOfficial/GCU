@@ -10,6 +10,17 @@ export default function Home() {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
+
+  const checkScroll = () => {
+    const container = document.getElementById('testimonials-scroll')
+    if (container) {
+      const { scrollLeft, scrollWidth, clientWidth } = container
+      setCanScrollLeft(scrollLeft > 0)
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10) // 10px buffer
+    }
+  }
 
   useEffect(() => {
     // Create Intersection Observer for scroll animations
@@ -56,8 +67,21 @@ export default function Home() {
     fetchTestimonials()
   }, [])
 
+  useEffect(() => {
+    const container = document.getElementById('testimonials-scroll')
+    if (container) {
+      container.addEventListener('scroll', checkScroll)
+      checkScroll() // Initial check
+      window.addEventListener('resize', checkScroll)
+      return () => {
+        container.removeEventListener('scroll', checkScroll)
+        window.removeEventListener('resize', checkScroll)
+      }
+    }
+  }, [testimonials])
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="editorial-spacing bg-black text-white">
         <div className="container-editorial">
@@ -169,30 +193,34 @@ export default function Home() {
               {/* Navigation Arrows */}
               {testimonials.length > 3 && (
                 <>
-                  <button
-                    onClick={() => {
-                      const container = document.getElementById('testimonials-scroll')
-                      if (container) {
-                        container.scrollBy({ left: -400, behavior: 'smooth' })
-                      }
-                    }}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:bg-grey-800 transition-colors cursor-pointer border-2 border-black z-10"
-                    aria-label="Scroll left"
-                  >
-                    <ChevronLeft size={24} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      const container = document.getElementById('testimonials-scroll')
-                      if (container) {
-                        container.scrollBy({ left: 400, behavior: 'smooth' })
-                      }
-                    }}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:bg-grey-800 transition-colors cursor-pointer border-2 border-black z-10"
-                    aria-label="Scroll right"
-                  >
-                    <ChevronRight size={24} />
-                  </button>
+                  {canScrollLeft && (
+                    <button
+                      onClick={() => {
+                        const container = document.getElementById('testimonials-scroll')
+                        if (container) {
+                          container.scrollBy({ left: -400, behavior: 'smooth' })
+                        }
+                      }}
+                      className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 w-12 h-12 rounded-full bg-black text-white flex opacity-50 md:opacity-100 items-center justify-center hover:bg-grey-800 transition-colors cursor-pointer border-2 border-black z-10"
+                      aria-label="Scroll left"
+                    >
+                      <ChevronLeft size={24} />
+                    </button>
+                  )}
+                  {canScrollRight && (
+                    <button
+                      onClick={() => {
+                        const container = document.getElementById('testimonials-scroll')
+                        if (container) {
+                          container.scrollBy({ left: 400, behavior: 'smooth' })
+                        }
+                      }}
+                      className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 w-12 h-12 rounded-full bg-black text-white flex opacity-50 md:opacity-100 items-center justify-center hover:bg-grey-800 transition-colors cursor-pointer border-2 border-black z-10"
+                      aria-label="Scroll right"
+                    >
+                      <ChevronRight size={24} />
+                    </button>
+                  )}
                 </>
               )}
 
@@ -214,7 +242,7 @@ export default function Home() {
                   >
                     <div className="flex flex-col items-center text-center h-full">
                       {testimonial.image_url && (
-                        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-black mb-4 bg-grey-100">
+                        <div className="w-20 h-20 rounded-full overflow-hidden border border-grey-200 mb-4 bg-grey-100 shadow-sm">
                           <img
                             src={testimonial.image_url}
                             alt={testimonial.name}
