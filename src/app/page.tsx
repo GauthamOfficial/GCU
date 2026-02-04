@@ -162,7 +162,7 @@ export default function Home() {
       {testimonials.length > 0 && (
         <section className="editorial-spacing bg-white">
           <div className="container-editorial">
-            <h2 className="mb-16 text-center text-black opacity-100">What Our Clients Say</h2>
+            <h2 className="mb-16 text-center text-black opacity-100 scroll-animate">What Our Clients Say</h2>
 
             {/* Carousel Container */}
             <div className="relative">
@@ -206,10 +206,11 @@ export default function Home() {
                   WebkitOverflowScrolling: 'touch'
                 }}
               >
-                {testimonials.map((testimonial) => (
+                {testimonials.map((testimonial, index) => (
                   <div
                     key={testimonial.id}
-                    className="flex-shrink-0 w-[350px] border-2 border-grey-200 rounded-lg p-6 bg-white shadow-sm opacity-100"
+                    className="flex-shrink-0 w-[350px] border-2 border-grey-200 rounded-lg p-6 bg-white shadow-sm opacity-100 scroll-animate"
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div className="flex flex-col items-center text-center h-full">
                       {testimonial.image_url && (
