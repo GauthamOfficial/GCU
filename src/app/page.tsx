@@ -284,13 +284,18 @@ export default function Home() {
 
 const services = [
   {
-    title: "Birthday",
-    description: "Celebrate life's milestones with vibrant, joyful videos that capture the energy and emotion of your special day.",
-  },
-  {
     title: "Pre-shoot",
     description: "Romantic cinematic stories that showcase your love and connection in stunning locations before the big day.",
   },
+  {
+    title: "Music Video",
+    description: "Creative visual storytelling that brings your music to life with professional direction, editing, and color grading.",
+  },
+  {
+    title: "Birthday",
+    description: "Celebrate life's milestones with vibrant, joyful videos that capture the energy and emotion of your special day.",
+  },
+
   {
     title: "Traditional",
     description: "Honor heritage and culture with elegant films that respectfully preserve your family's most sacred traditions.",
@@ -298,10 +303,6 @@ const services = [
   {
     title: "Wedding Highlights",
     description: "Relive the magic of your wedding day with a cinematic highlight reel capturing the vows, emotions, and celebration.",
-  },
-  {
-    title: "Music Video",
-    description: "Creative visual storytelling that brings your music to life with professional direction, editing, and color grading.",
   },
   {
     title: "Travel Highlights",
