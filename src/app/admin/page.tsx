@@ -577,9 +577,9 @@ export default function AdminPage() {
                             {portfolioItems.length === 0 ? (
                                 <p className="text-center text-muted-foreground py-8">No portfolio items yet</p>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
                                     {portfolioItems.map((item) => (
-                                        <div key={item.id} className="border rounded-lg p-4">
+                                        <div key={item.id} className="border rounded-lg p-3">
                                             {editingPortfolio === item.id ? (
                                                 <div className="space-y-4">
                                                     <Input
@@ -611,7 +611,7 @@ export default function AdminPage() {
                                                     <div className="space-y-2">
                                                         <label className="text-sm font-semibold">Thumbnail Image</label>
                                                         {item.thumbnail_url && (
-                                                            <div className="relative w-full h-32 bg-grey-100 rounded border overflow-hidden">
+                                                            <div className="relative w-full aspect-video bg-grey-100 rounded border overflow-hidden">
                                                                 <img
                                                                     src={item.thumbnail_url}
                                                                     alt="Thumbnail preview"
@@ -620,15 +620,22 @@ export default function AdminPage() {
                                                             </div>
                                                         )}
                                                         <div className="flex gap-2">
-                                                            <Input
+                                                            <label
+                                                                htmlFor={`file-upload-${item.id}`}
+                                                                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm font-medium cursor-pointer transition-all"
+                                                            >
+                                                                <Upload size={16} />
+                                                                Choose File
+                                                            </label>
+                                                            <input
+                                                                id={`file-upload-${item.id}`}
                                                                 type="file"
                                                                 accept="image/*"
                                                                 onChange={(e) => {
                                                                     const file = e.target.files?.[0]
                                                                     if (file) uploadThumbnail(file, item.id)
                                                                 }}
-                                                                disabled={uploadingThumbnail === item.id}
-                                                                className="flex-1"
+                                                                className="hidden"
                                                             />
                                                             {uploadingThumbnail === item.id && (
                                                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -664,20 +671,28 @@ export default function AdminPage() {
                                             ) : (
                                                 <div>
                                                     <div className="flex items-start justify-between mb-2">
-                                                        <div>
-                                                            <h3 className="font-semibold mb-1">{item.title}</h3>
-                                                            <Badge variant="outline" className="mb-2">{item.category}</Badge>
+                                                        <div className="flex-1">
+                                                            <h3 className="text-sm font-semibold mb-1 line-clamp-1">{item.title}</h3>
+                                                            <Badge variant="outline" className="text-xs">{item.category}</Badge>
                                                         </div>
-                                                        <div className="flex gap-2">
-                                                            <Button onClick={() => setEditingPortfolio(item.id)} variant="outline" size="sm">
-                                                                <Edit size={16} />
+                                                        <div className="flex gap-1">
+                                                            <Button onClick={() => setEditingPortfolio(item.id)} variant="outline" size="icon-sm">
+                                                                <Edit size={14} />
                                                             </Button>
-                                                            <Button onClick={() => deletePortfolioItem(item.id)} variant="outline" size="sm" className="border-destructive text-destructive hover:bg-destructive/10">
-                                                                <Trash2 size={16} />
+                                                            <Button onClick={() => deletePortfolioItem(item.id)} variant="outline" size="icon-sm" className="border-destructive text-destructive hover:bg-destructive/10">
+                                                                <Trash2 size={14} />
                                                             </Button>
                                                         </div>
                                                     </div>
-                                                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                                                    {item.thumbnail_url && (
+                                                        <div className="w-full aspect-video bg-grey-100 rounded border overflow-hidden">
+                                                            <img
+                                                                src={item.thumbnail_url}
+                                                                alt={item.title}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
