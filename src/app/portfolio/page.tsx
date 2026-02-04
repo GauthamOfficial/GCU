@@ -44,7 +44,7 @@ export default function PortfolioPage() {
         return () => {
             observerRef.current?.disconnect()
         }
-    }, [portfolioItems])
+    }, [portfolioItems, selectedCategory])
 
     async function fetchPortfolioItems() {
         const supabase = createClient()
