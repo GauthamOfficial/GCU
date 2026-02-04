@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 import { Testimonial } from '@/lib/types'
 
 export default function Home() {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+  const [currentTestimonial, setCurrentTestimonial] = useState(0)
 
   useEffect(() => {
     // Create Intersection Observer for scroll animations
@@ -161,34 +162,89 @@ export default function Home() {
       {testimonials.length > 0 && (
         <section className="editorial-spacing bg-white">
           <div className="container-editorial">
-            <h2 className="mb-16 text-center text-black scroll-animate opacity-100">What Our Clients Say</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={testimonial.id}
-                  className="scroll-animate opacity-100 border-2 border-grey-200 rounded-lg p-6 bg-white shadow-sm"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="flex flex-col items-center text-center">
-                    {testimonial.image_url && (
-                      <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-black mb-4 bg-grey-100">
-                        <img
-                          src={testimonial.image_url}
-                          alt={testimonial.name}
-                          className="w-full h-full object-cover"
-                        />
+            <h2 className="mb-16 text-center text-black opacity-100">What Our Clients Say</h2>
+
+            {/* Carousel Container */}
+            <div className="relative">
+              {/* Navigation Arrows */}
+              {testimonials.length > 3 && (
+                <>
+                  <button
+                    onClick={() => {
+                      const container = document.getElementById('testimonials-scroll')
+                      if (container) {
+                        container.scrollBy({ left: -400, behavior: 'smooth' })
+                      }
+                    }}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:bg-grey-800 transition-colors cursor-pointer border-2 border-black z-10"
+                    aria-label="Scroll left"
+                  >
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      const container = document.getElementById('testimonials-scroll')
+                      if (container) {
+                        container.scrollBy({ left: 400, behavior: 'smooth' })
+                      }
+                    }}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:bg-grey-800 transition-colors cursor-pointer border-2 border-black z-10"
+                    aria-label="Scroll right"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
+                </>
+              )}
+
+              {/* Scrollable Testimonials */}
+              <div
+                id="testimonials-scroll"
+                className="flex gap-6 overflow-x-auto scroll-smooth pb-4"
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
+                {testimonials.map((testimonial) => (
+                  <div
+                    key={testimonial.id}
+                    className="flex-shrink-0 w-[350px] border-2 border-grey-200 rounded-lg p-6 bg-white shadow-sm opacity-100"
+                  >
+                    <div className="flex flex-col items-center text-center h-full">
+                      {testimonial.image_url && (
+                        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-black mb-4 bg-grey-100">
+                          <img
+                            src={testimonial.image_url}
+                            alt={testimonial.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement
+                              target.style.display = 'none'
+                            }}
+                          />
+                        </div>
+                      )}
+                      <p className="text-grey-600 mb-4 leading-relaxed text-sm flex-grow">
+                        "{testimonial.message}"
+                      </p>
+                      <div>
+                        <p className="font-semibold text-black">{testimonial.name}</p>
+                        {testimonial.role && (
+                          <p className="text-xs text-grey-500 mt-1">{testimonial.role}</p>
+                        )}
                       </div>
-                    )}
-                    <p className="text-grey-600 mb-4 leading-relaxed">
-                      "{testimonial.message}"
-                    </p>
-                    <p className="font-semibold text-black">{testimonial.name}</p>
-                    {testimonial.role && (
-                      <p className="text-sm text-grey-500">{testimonial.role}</p>
-                    )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              {/* Hide scrollbar */}
+              <style jsx>{`
+                #testimonials-scroll::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
             </div>
           </div>
         </section>
