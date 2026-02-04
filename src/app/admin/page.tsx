@@ -235,6 +235,33 @@ export default function AdminPage() {
         }
     }
 
+    async function createPortfolioItem(item: Partial<PortfolioItem>): Promise<void> {
+        try {
+            const response = await fetch('/api/admin/portfolio', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                },
+                body: JSON.stringify(item)
+            })
+
+            if (!response.ok) {
+                const error = await response.json()
+                console.error('Failed to create portfolio item:', error)
+                alert(`Failed to create portfolio item: ${error.error || 'Unknown error'}`)
+                throw new Error('Failed to create portfolio item')
+            }
+
+            const newItem = await response.json()
+            setPortfolioItems([newItem, ...portfolioItems.filter(p => !p.id.startsWith('new-'))])
+        } catch (error) {
+            console.error('Error creating portfolio item:', error)
+            alert('Failed to create portfolio item. Please try again.')
+            throw error
+        }
+    }
+
     // Testimonials CRUD Functions
     async function createTestimonial(testimonial: Partial<Testimonial>): Promise<void> {
         try {
@@ -630,6 +657,29 @@ export default function AdminPage() {
                             <CardDescription>Edit portfolio videos and details</CardDescription>
                         </CardHeader>
                         <CardContent>
+                            <div className="mb-4">
+                                <Button
+                                    onClick={() => {
+                                        const newItem: PortfolioItem = {
+                                            id: 'new-' + Date.now(),
+                                            created_at: new Date().toISOString(),
+                                            updated_at: new Date().toISOString(),
+                                            title: '',
+                                            category: 'Event',
+                                            video_url: '',
+                                            thumbnail_url: null,
+                                            description: null,
+                                            display_order: 0
+                                        }
+                                        setPortfolioItems([newItem, ...portfolioItems])
+                                        setEditingPortfolio(newItem.id)
+                                    }}
+                                    size="sm"
+                                >
+                                    <Plus className="mr-2" size={16} />
+                                    Add Portfolio Item
+                                </Button>
+                            </div>
                             {portfolioItems.length === 0 ? (
                                 <p className="text-center text-muted-foreground py-8">No portfolio items yet</p>
                             ) : (
@@ -692,11 +742,44 @@ export default function AdminPage() {
                                                         placeholder="Video URL"
                                                     />
                                                     <div className="flex gap-2">
-                                                        <Button onClick={() => updatePortfolioItem(item)} size="sm">
+                                                        <Button onClick={() => {
+                                                            // Validate required fields
+                                                            if (!item.title.trim()) {
+                                                                alert('Please enter a title')
+                                                                return
+                                                            }
+                                                            if (!item.video_url.trim()) {
+                                                                alert('Please enter a video URL')
+                                                                return
+                                                            }
+
+                                                            if (item.id.startsWith('new-')) {
+                                                                // New item - create it
+                                                                createPortfolioItem({
+                                                                    title: item.title,
+                                                                    category: item.category,
+                                                                    video_url: item.video_url,
+                                                                    thumbnail_url: item.thumbnail_url,
+                                                                    description: item.description,
+                                                                    display_order: item.display_order
+                                                                }).then(() => {
+                                                                    setPortfolioItems(portfolioItems.filter(p => p.id !== item.id))
+                                                                    setEditingPortfolio(null)
+                                                                })
+                                                            } else {
+                                                                // Existing item - update it
+                                                                updatePortfolioItem(item)
+                                                            }
+                                                        }} size="sm">
                                                             <Save className="mr-2" size={16} />
                                                             Save
                                                         </Button>
-                                                        <Button onClick={() => setEditingPortfolio(null)} variant="outline" size="sm">
+                                                        <Button onClick={() => {
+                                                            if (item.id.startsWith('new-')) {
+                                                                setPortfolioItems(portfolioItems.filter(p => p.id !== item.id))
+                                                            }
+                                                            setEditingPortfolio(null)
+                                                        }} variant="outline" size="sm">
                                                             <X className="mr-2" size={16} />
                                                             Cancel
                                                         </Button>
