@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate category
-        const validCategories = ['Birthday', 'Pre-shoot', 'Traditional', 'Event']
+        const validCategories = ['Birthday', 'Pre-shoot', 'Traditional', 'Event', 'Music Video', 'Travel Highlights', 'Wedding Highlights', 'Promotion Videos']
         if (!validCategories.includes(category)) {
             return NextResponse.json({ error: 'Invalid category' }, { status: 400 })
         }

@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS packages (
 CREATE TABLE IF NOT EXISTS portfolio_items (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
-  category TEXT NOT NULL CHECK (category IN ('Birthday', 'Pre-shoot', 'Traditional', 'Event')),
+  category TEXT NOT NULL CHECK (category IN ('Birthday', 'Pre-shoot', 'Traditional', 'Event', 'Music Video', 'Travel Highlights', 'Wedding Highlights', 'Promotion Videos')),
   video_url TEXT NOT NULL, -- Google Drive shareable link
   thumbnail_url TEXT, -- Google Drive shareable link for thumbnail
   description TEXT,
