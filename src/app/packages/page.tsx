@@ -1,70 +1,36 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { Package } from '@/lib/types'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
-// Package data optimized for Sri Lanka reel-based deliverables
-const packages = [
-    {
-        id: '1',
-        name: 'Starter Video',
-        description: 'Perfect for quick celebrations and intimate moments',
-        starting_price: 35000,
-        is_popular: false,
-        deliverables: [
-            '1 cinematic video (60-90 seconds)',
-            '2-3 hours shoot duration',
-            '1 location, 1 outfit',
-            '16:9 cinematic format',
-            'Professional color grading',
-            'Background music',
-            'Delivered in 5-7 days',
-            '1 revision included'
-        ]
-    },
-    {
-        id: '2',
-        name: 'Premium Video',
-        description: 'Our most popular choice for memorable occasions',
-        starting_price: 65000,
-        is_popular: true,
-        deliverables: [
-            '1 cinematic video (90-120 seconds)',
-            '4-5 hours shoot duration',
-            '2 locations, 2 outfits',
-            '16:9 cinematic format',
-            'Advanced color grading',
-            'Custom music selection',
-            'Raw footage included',
-            'Delivered in 7-10 days',
-            '2 revisions included'
-        ]
-    },
-    {
-        id: '3',
-        name: 'Mini Pre-shoot',
-        description: 'Romantic storytelling for couples',
-        starting_price: 85000,
-        is_popular: false,
-        deliverables: [
-            '2 cinematic videos (90 seconds each)',
-            'Full day shoot (6-8 hours)',
-            '3 locations, 3 outfits',
-            '16:9 cinematic format',
-            'Cinematic color grading',
-            'Custom soundtrack',
-            'Full raw footage included',
-            'Delivered in 10-14 days',
-            '3 revisions included'
-        ]
-    }
-]
-
 export default function PackagesPage() {
+    const [packages, setPackages] = useState<Package[]>([])
+    const [loading, setLoading] = useState(true)
     const observerRef = useRef<IntersectionObserver | null>(null)
+
+    useEffect(() => {
+        fetchPackages()
+    }, [])
+
+    async function fetchPackages() {
+        const supabase = createClient()
+        const { data, error } = await supabase
+            .from('packages')
+            .select('*')
+            .order('display_order', { ascending: true })
+
+        if (error) {
+            console.error('Error fetching packages:', error)
+        } else {
+            setPackages(data || [])
+        }
+        setLoading(false)
+    }
 
     useEffect(() => {
         // Create Intersection Observer for scroll animations
@@ -91,62 +57,68 @@ export default function PackagesPage() {
         return () => {
             observerRef.current?.disconnect()
         }
-    }, [])
+    }, [packages])
 
     return (
         <div className="min-h-screen py-24">
             <div className="container-editorial">
                 {/* Header */}
-                <div className="mb-16 text-center">
+                <div className="mb-16">
                     <h1 className="mb-6 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>Packages</h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-                        Clear pricing for cinematic videos. All packages include professional color grading and digital delivery.
+                    <p className="text-xl text-muted-foreground max-w-2xl opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
+                        Choose the perfect package for your special moment. All packages include our signature cinematic style and professional editing.
                     </p>
                 </div>
 
                 {/* Packages Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {packages.map((pkg, index) => (
-                        <Card
-                            key={pkg.id}
-                            className={`relative flex flex-col scroll-animate ${pkg.is_popular ? 'border-2 border-foreground shadow-lg' : ''}`}
-                            style={{ animationDelay: `${index * 0.1}s` }}
-                        >
-                            {pkg.is_popular && (
-                                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-foreground text-background">
-                                    Most Popular
-                                </Badge>
-                            )}
-                            <CardHeader>
-                                <CardTitle className="text-3xl">{pkg.name}</CardTitle>
-                                <CardDescription className="text-base">{pkg.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <div className="mb-6">
-                                    <p className="text-sm uppercase tracking-wider text-muted-foreground mb-1">Starting from</p>
-                                    <p className="text-4xl font-bold">
-                                        LKR {pkg.starting_price.toLocaleString()}
-                                    </p>
-                                </div>
-                                <div className="space-y-2.5">
-                                    {pkg.deliverables.map((deliverable, index) => (
-                                        <div key={index} className="flex items-start gap-2.5">
-                                            <span className="text-foreground mt-1 flex-shrink-0">•</span>
-                                            <span className="text-sm leading-relaxed">{deliverable}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                            <CardFooter>
-                                <Button asChild className="w-full" variant={pkg.is_popular ? 'default' : 'outline'}>
-                                    <Link href="/book">
-                                        Book This
-                                    </Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    ))}
-                </div>
+                {loading ? (
+                    <div className="text-center py-20 text-muted-foreground">Loading packages...</div>
+                ) : packages.length === 0 ? (
+                    <div className="text-center py-20 text-muted-foreground">No packages available.</div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {packages.map((pkg, index) => (
+                            <Card
+                                key={pkg.id}
+                                className={`relative flex flex-col border-2 border-black shadow-lg scroll-animate ${pkg.is_popular ? 'border-4 border-black' : ''}`}
+                                style={{ animationDelay: `${index * 0.1}s` }}
+                            >
+                                {pkg.is_popular && (
+                                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-black text-white">
+                                        Most Popular
+                                    </Badge>
+                                )}
+                                <CardHeader className="bg-white">
+                                    <CardTitle className="text-3xl text-black">{pkg.name}</CardTitle>
+                                    <CardDescription className="text-base text-grey-600">{pkg.description}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-1 bg-white">
+                                    <div className="mb-6">
+                                        <p className="text-sm uppercase tracking-wider text-grey-600 mb-1">Starting from</p>
+                                        <p className="text-4xl font-bold text-black">
+                                            LKR {pkg.starting_price.toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <div className="space-y-2.5">
+                                        {pkg.deliverables.map((deliverable, idx) => (
+                                            <div key={idx} className="flex items-start gap-2.5">
+                                                <span className="text-black mt-1 flex-shrink-0">•</span>
+                                                <span className="text-sm leading-relaxed text-black">{deliverable}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="bg-white">
+                                    <Button asChild className="w-full" variant={pkg.is_popular ? 'default' : 'outline'}>
+                                        <Link href="/book">
+                                            Book This
+                                        </Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
+                )}
 
                 {/* Additional Info */}
                 <div className="mt-20 text-center max-w-2xl mx-auto">

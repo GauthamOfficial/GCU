@@ -101,67 +101,121 @@ export default function AdminPage() {
     }
 
     async function updatePackage(pkg: Package) {
-        const supabase = createClient()
-        const { error } = await supabase
-            .from('packages')
-            .update({
-                name: pkg.name,
-                description: pkg.description,
-                starting_price: pkg.starting_price,
-                is_popular: pkg.is_popular
+        try {
+            const response = await fetch('/api/admin/packages', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                },
+                body: JSON.stringify({
+                    id: pkg.id,
+                    name: pkg.name,
+                    description: pkg.description,
+                    starting_price: pkg.starting_price,
+                    is_popular: pkg.is_popular,
+                    deliverables: pkg.deliverables,
+                    display_order: pkg.display_order
+                })
             })
-            .eq('id', pkg.id)
 
-        if (!error) {
-            setPackages(packages.map(p => p.id === pkg.id ? pkg : p))
+            if (!response.ok) {
+                const error = await response.json()
+                console.error('Failed to update package:', error)
+                alert(`Failed to update package: ${error.error || 'Unknown error'}`)
+                return
+            }
+
+            const updatedPackage = await response.json()
+            setPackages(packages.map(p => p.id === pkg.id ? updatedPackage : p))
             setEditingPackage(null)
+        } catch (error) {
+            console.error('Error updating package:', error)
+            alert('Failed to update package. Please try again.')
         }
     }
 
     async function deletePackage(id: string) {
         if (!confirm('Are you sure you want to delete this package?')) return
 
-        const supabase = createClient()
-        const { error } = await supabase
-            .from('packages')
-            .delete()
-            .eq('id', id)
+        try {
+            const response = await fetch(`/api/admin/packages?id=${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                }
+            })
 
-        if (!error) {
+            if (!response.ok) {
+                const error = await response.json()
+                console.error('Failed to delete package:', error)
+                alert(`Failed to delete package: ${error.error || 'Unknown error'}`)
+                return
+            }
+
             setPackages(packages.filter(p => p.id !== id))
+        } catch (error) {
+            console.error('Error deleting package:', error)
+            alert('Failed to delete package. Please try again.')
         }
     }
 
     async function updatePortfolioItem(item: PortfolioItem) {
-        const supabase = createClient()
-        const { error } = await supabase
-            .from('portfolio_items')
-            .update({
-                title: item.title,
-                description: item.description,
-                category: item.category,
-                thumbnail_url: item.thumbnail_url,
-                video_url: item.video_url
+        try {
+            const response = await fetch('/api/admin/portfolio', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                },
+                body: JSON.stringify({
+                    id: item.id,
+                    title: item.title,
+                    description: item.description,
+                    category: item.category,
+                    thumbnail_url: item.thumbnail_url,
+                    video_url: item.video_url
+                })
             })
-            .eq('id', item.id)
 
-        if (!error) {
-            setPortfolioItems(portfolioItems.map(p => p.id === item.id ? item : p))
+            if (!response.ok) {
+                const error = await response.json()
+                console.error('Failed to update portfolio item:', error)
+                alert(`Failed to update portfolio item: ${error.error || 'Unknown error'}`)
+                return
+            }
+
+            const updatedItem = await response.json()
+            setPortfolioItems(portfolioItems.map(p => p.id === item.id ? updatedItem : p))
             setEditingPortfolio(null)
+        } catch (error) {
+            console.error('Error updating portfolio item:', error)
+            alert('Failed to update portfolio item. Please try again.')
         }
     }
 
     async function deletePortfolioItem(id: string) {
         if (!confirm('Are you sure you want to delete this portfolio item?')) return
 
-        const supabase = createClient()
-        const { error } = await supabase
-            .from('portfolio_items')
-            .delete()
-            .eq('id', id)
+        try {
+            const response = await fetch(`/api/admin/portfolio?id=${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                }
+            })
 
-        if (!error) {
+            if (!response.ok) {
+                const error = await response.json()
+                console.error('Failed to delete portfolio item:', error)
+                alert(`Failed to delete portfolio item: ${error.error || 'Unknown error'}`)
+                return
+            }
+
             setPortfolioItems(portfolioItems.filter(p => p.id !== id))
+        } catch (error) {
+            console.error('Error deleting portfolio item:', error)
+            alert('Failed to delete portfolio item. Please try again.')
         }
     }
 
@@ -414,6 +468,54 @@ export default function AdminPage() {
                                                         onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, starting_price: parseInt(e.target.value) } : p))}
                                                         placeholder="Price"
                                                     />
+                                                    <Input
+                                                        type="number"
+                                                        value={pkg.display_order}
+                                                        onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, display_order: parseInt(e.target.value) } : p))}
+                                                        placeholder="Display Order"
+                                                    />
+
+                                                    {/* Deliverables Editor */}
+                                                    <div className="space-y-2">
+                                                        <label className="text-sm font-semibold">Deliverables</label>
+                                                        {pkg.deliverables.map((deliverable, idx) => (
+                                                            <div key={idx} className="flex gap-2">
+                                                                <Input
+                                                                    value={deliverable}
+                                                                    onChange={(e) => {
+                                                                        const newDeliverables = [...pkg.deliverables]
+                                                                        newDeliverables[idx] = e.target.value
+                                                                        setPackages(packages.map(p => p.id === pkg.id ? { ...p, deliverables: newDeliverables } : p))
+                                                                    }}
+                                                                    placeholder={`Deliverable ${idx + 1}`}
+                                                                />
+                                                                <Button
+                                                                    onClick={() => {
+                                                                        const newDeliverables = pkg.deliverables.filter((_, i) => i !== idx)
+                                                                        setPackages(packages.map(p => p.id === pkg.id ? { ...p, deliverables: newDeliverables } : p))
+                                                                    }}
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    type="button"
+                                                                >
+                                                                    <X size={16} />
+                                                                </Button>
+                                                            </div>
+                                                        ))}
+                                                        <Button
+                                                            onClick={() => {
+                                                                const newDeliverables = [...pkg.deliverables, '']
+                                                                setPackages(packages.map(p => p.id === pkg.id ? { ...p, deliverables: newDeliverables } : p))
+                                                            }}
+                                                            variant="outline"
+                                                            size="sm"
+                                                            type="button"
+                                                        >
+                                                            <Plus className="mr-2" size={16} />
+                                                            Add Deliverable
+                                                        </Button>
+                                                    </div>
+
                                                     <div className="flex items-center gap-2">
                                                         <input
                                                             type="checkbox"

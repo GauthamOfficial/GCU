@@ -25,12 +25,9 @@ export async function GET() {
 // POST - Create new portfolio item (admin only)
 export async function POST(request: NextRequest) {
     try {
-        const supabase = await createClient()
-
-        // Check if user is authenticated
-        const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-        if (authError || !user) {
+        // Check admin password
+        const adminPassword = request.headers.get('x-admin-password')
+        if (adminPassword !== process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
@@ -82,12 +79,9 @@ export async function POST(request: NextRequest) {
 // PATCH - Update portfolio item (admin only)
 export async function PATCH(request: NextRequest) {
     try {
-        const supabase = await createClient()
-
-        // Check if user is authenticated
-        const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-        if (authError || !user) {
+        // Check admin password
+        const adminPassword = request.headers.get('x-admin-password')
+        if (adminPassword !== process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
@@ -120,12 +114,9 @@ export async function PATCH(request: NextRequest) {
 // DELETE - Delete portfolio item (admin only)
 export async function DELETE(request: NextRequest) {
     try {
-        const supabase = await createClient()
-
-        // Check if user is authenticated
-        const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-        if (authError || !user) {
+        // Check admin password
+        const adminPassword = request.headers.get('x-admin-password')
+        if (adminPassword !== process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 

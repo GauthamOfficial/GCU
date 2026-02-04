@@ -44,7 +44,7 @@ export default function PortfolioPage() {
         return () => {
             observerRef.current?.disconnect()
         }
-    }, [])
+    }, [portfolioItems])
 
     async function fetchPortfolioItems() {
         const supabase = createClient()
@@ -102,7 +102,8 @@ export default function PortfolioPage() {
                             <div
                                 key={item.id}
                                 onClick={() => setSelectedItem(item)}
-                                className="group cursor-pointer border-2 border-black rounded-lg overflow-hidden hover:border-grey-700 transition-all duration-300 shadow-lg hover:shadow-xl opacity-100"
+                                className="group cursor-pointer border-2 border-black rounded-lg overflow-hidden hover:border-grey-700 transition-all duration-300 shadow-lg hover:shadow-xl scroll-animate"
+                                style={{ animationDelay: `${index * 0.05}s` }}
                             >
                                 <div className="aspect-video bg-grey-200 overflow-hidden">
                                     {item.thumbnail_url ? (
