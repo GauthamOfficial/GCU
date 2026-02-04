@@ -108,7 +108,7 @@ export default function PortfolioPage() {
                                 <div className="aspect-video bg-grey-200 overflow-hidden">
                                     {item.thumbnail_url ? (
                                         <img
-                                            src={convertGoogleDriveUrl(item.thumbnail_url)}
+                                            src={convertMediaUrl(item.thumbnail_url)}
                                             alt={item.title}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
@@ -136,7 +136,7 @@ export default function PortfolioPage() {
                         <div className="space-y-4">
                             <div className="aspect-video bg-black">
                                 <iframe
-                                    src={convertGoogleDriveUrl(selectedItem.video_url)}
+                                    src={convertMediaUrl(selectedItem.video_url)}
                                     className="w-full h-full"
                                     allow="autoplay"
                                     allowFullScreen
@@ -154,11 +154,21 @@ export default function PortfolioPage() {
 }
 
 // Convert Google Drive sharing URL to embeddable format
-function convertGoogleDriveUrl(url: string): string {
-    // Extract file ID from various Google Drive URL formats
+// Convert media URL to embeddable format
+function convertMediaUrl(url: string): string {
+    if (!url) return ''
+
+    // Handle YouTube URLs
+    const youtubeMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/)
+    if (youtubeMatch && youtubeMatch[1]) {
+        return `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1`
+    }
+
+    // Handle Google Drive URLs
     const fileIdMatch = url.match(/\/d\/([^/]+)/) || url.match(/id=([^&]+)/)
     if (fileIdMatch && fileIdMatch[1]) {
         return `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`
     }
+
     return url
 }
