@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Booking, Package, PortfolioItem } from '@/lib/types'
+import { Booking, Package, PortfolioItem, Testimonial } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -21,9 +21,11 @@ export default function AdminPage() {
     const [bookings, setBookings] = useState<Booking[]>([])
     const [packages, setPackages] = useState<Package[]>([])
     const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([])
-    const [activeTab, setActiveTab] = useState<'bookings' | 'packages' | 'portfolio'>('bookings')
+    const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+    const [activeTab, setActiveTab] = useState<'bookings' | 'packages' | 'portfolio' | 'testimonials'>('bookings')
     const [editingPackage, setEditingPackage] = useState<string | null>(null)
     const [editingPortfolio, setEditingPortfolio] = useState<string | null>(null)
+    const [editingTestimonial, setEditingTestimonial] = useState<string | null>(null)
     const [uploadingThumbnail, setUploadingThumbnail] = useState<string | null>(null)
     const [uploadProgress, setUploadProgress] = useState<number>(0)
 
@@ -60,6 +62,21 @@ export default function AdminPage() {
             .select('*')
             .order('display_order', { ascending: true })
         if (portfolioData) setPortfolioItems(portfolioData)
+
+        // Fetch testimonials via admin API
+        try {
+            const response = await fetch('/api/admin/testimonials', {
+                headers: {
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                }
+            })
+            if (response.ok) {
+                const testimonialsData = await response.json()
+                setTestimonials(testimonialsData)
+            }
+        } catch (error) {
+            console.error('Error fetching testimonials:', error)
+        }
     }
 
     function handleLogin(e: React.FormEvent) {
@@ -84,6 +101,7 @@ export default function AdminPage() {
         setBookings([])
         setPackages([])
         setPortfolioItems([])
+        setTestimonials([])
         setUsername('')
         setPassword('')
     }
@@ -216,6 +234,93 @@ export default function AdminPage() {
         } catch (error) {
             console.error('Error deleting portfolio item:', error)
             alert('Failed to delete portfolio item. Please try again.')
+        }
+    }
+
+    // Testimonials CRUD Functions
+    async function createTestimonial(testimonial: Partial<Testimonial>): Promise<void> {
+        try {
+            const response = await fetch('/api/admin/testimonials', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                },
+                body: JSON.stringify(testimonial)
+            })
+
+            if (!response.ok) {
+                const error = await response.json()
+                console.error('Failed to create testimonial:', error)
+                alert(`Failed to create testimonial: ${error.error || 'Unknown error'}`)
+                throw new Error(error.error || 'Failed to create testimonial')
+            }
+
+            const newTestimonial = await response.json()
+            setTestimonials([newTestimonial, ...testimonials])
+        } catch (error) {
+            console.error('Error creating testimonial:', error)
+            alert('Failed to create testimonial. Please try again.')
+            throw error
+        }
+    }
+
+    async function updateTestimonial(testimonial: Testimonial) {
+        try {
+            const response = await fetch('/api/admin/testimonials', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                },
+                body: JSON.stringify({
+                    id: testimonial.id,
+                    name: testimonial.name,
+                    role: testimonial.role,
+                    message: testimonial.message,
+                    image_url: testimonial.image_url,
+                    is_active: testimonial.is_active
+                })
+            })
+
+            if (!response.ok) {
+                const error = await response.json()
+                console.error('Failed to update testimonial:', error)
+                alert(`Failed to update testimonial: ${error.error || 'Unknown error'}`)
+                return
+            }
+
+            const updatedTestimonial = await response.json()
+            setTestimonials(testimonials.map(t => t.id === testimonial.id ? updatedTestimonial : t))
+            setEditingTestimonial(null)
+        } catch (error) {
+            console.error('Error updating testimonial:', error)
+            alert('Failed to update testimonial. Please try again.')
+        }
+    }
+
+    async function deleteTestimonial(id: string) {
+        if (!confirm('Are you sure you want to delete this testimonial?')) return
+
+        try {
+            const response = await fetch(`/api/admin/testimonials?id=${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                }
+            })
+
+            if (!response.ok) {
+                const error = await response.json()
+                console.error('Failed to delete testimonial:', error)
+                alert(`Failed to delete testimonial: ${error.error || 'Unknown error'}`)
+                return
+            }
+
+            setTestimonials(testimonials.filter(t => t.id !== id))
+        } catch (error) {
+            console.error('Error deleting testimonial:', error)
+            alert('Failed to delete testimonial. Please try again.')
         }
     }
 
@@ -365,6 +470,12 @@ export default function AdminPage() {
                         onClick={() => setActiveTab('portfolio')}
                     >
                         Portfolio ({portfolioItems.length})
+                    </Button>
+                    <Button
+                        variant={activeTab === 'testimonials' ? 'default' : 'outline'}
+                        onClick={() => setActiveTab('testimonials')}
+                    >
+                        Testimonials ({testimonials.length})
                     </Button>
                 </div>
 
@@ -693,6 +804,186 @@ export default function AdminPage() {
                                                             />
                                                         </div>
                                                     )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Testimonials Management */}
+                {activeTab === 'testimonials' && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Testimonials</CardTitle>
+                            <CardDescription>Manage customer testimonials</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="mb-4">
+                                <Button
+                                    onClick={() => {
+                                        const newTestimonial: Testimonial = {
+                                            id: 'new-' + Date.now(),
+                                            created_at: new Date().toISOString(),
+                                            name: '',
+                                            role: '',
+                                            message: '',
+                                            image_url: '',
+                                            is_active: true
+                                        }
+                                        setTestimonials([newTestimonial, ...testimonials])
+                                        setEditingTestimonial(newTestimonial.id)
+                                    }}
+                                    size="sm"
+                                >
+                                    <Plus className="mr-2" size={16} />
+                                    Add Testimonial
+                                </Button>
+                            </div>
+
+                            {testimonials.length === 0 ? (
+                                <p className="text-center text-muted-foreground py-8">No testimonials yet</p>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    {testimonials.map((testimonial) => (
+                                        <div key={testimonial.id} className="border rounded-lg p-3">
+                                            {editingTestimonial === testimonial.id ? (
+                                                <div className="space-y-3">
+                                                    <Input
+                                                        value={testimonial.name}
+                                                        onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, name: e.target.value } : t))}
+                                                        placeholder="Name"
+                                                    />
+                                                    <Input
+                                                        value={testimonial.role || ''}
+                                                        onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, role: e.target.value } : t))}
+                                                        placeholder="Role (optional)"
+                                                    />
+                                                    <Textarea
+                                                        value={testimonial.message}
+                                                        onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, message: e.target.value } : t))}
+                                                        placeholder="Testimonial message"
+                                                        rows={3}
+                                                    />
+                                                    <div className="space-y-2">
+                                                        <label className="text-sm font-semibold">Profile Image URL</label>
+                                                        {testimonial.image_url && (
+                                                            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-grey-300 mx-auto">
+                                                                <img
+                                                                    src={testimonial.image_url}
+                                                                    alt={testimonial.name}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        <Input
+                                                            value={testimonial.image_url}
+                                                            onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, image_url: e.target.value } : t))}
+                                                            placeholder="Google Drive image URL"
+                                                        />
+                                                        <p className="text-xs text-muted-foreground">Use a Google Drive or direct image URL</p>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={testimonial.is_active}
+                                                            onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, is_active: e.target.checked } : t))}
+                                                            className="w-4 h-4"
+                                                        />
+                                                        <label className="text-sm">Active (visible on website)</label>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <Button
+                                                            onClick={() => {
+                                                                // Validate required fields
+                                                                if (!testimonial.name.trim()) {
+                                                                    alert('Please enter a name')
+                                                                    return
+                                                                }
+                                                                if (!testimonial.message.trim()) {
+                                                                    alert('Please enter a testimonial message')
+                                                                    return
+                                                                }
+                                                                if (!testimonial.image_url.trim()) {
+                                                                    alert('Please enter an image URL')
+                                                                    return
+                                                                }
+
+                                                                if (testimonial.id.startsWith('new-')) {
+                                                                    // New testimonial - create it
+                                                                    createTestimonial({
+                                                                        name: testimonial.name,
+                                                                        role: testimonial.role,
+                                                                        message: testimonial.message,
+                                                                        image_url: testimonial.image_url,
+                                                                        is_active: testimonial.is_active
+                                                                    }).then(() => {
+                                                                        // Remove the temporary one from state
+                                                                        setTestimonials(testimonials.filter(t => t.id !== testimonial.id))
+                                                                        setEditingTestimonial(null)
+                                                                    }).catch(() => {
+                                                                        // Error already handled in createTestimonial
+                                                                    })
+                                                                } else {
+                                                                    // Existing testimonial - update it
+                                                                    updateTestimonial(testimonial)
+                                                                }
+                                                            }}
+                                                            size="sm"
+                                                        >
+                                                            <Save className="mr-2" size={16} />
+                                                            Save
+                                                        </Button>
+                                                        <Button onClick={() => {
+                                                            if (testimonial.id.startsWith('new-')) {
+                                                                // Cancel new testimonial - remove from state
+                                                                setTestimonials(testimonials.filter(t => t.id !== testimonial.id))
+                                                            }
+                                                            setEditingTestimonial(null)
+                                                        }} variant="outline" size="sm">
+                                                            <X className="mr-2" size={16} />
+                                                            Cancel
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <div className="flex items-start justify-between mb-2">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                {testimonial.image_url && (
+                                                                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-grey-300">
+                                                                        <img
+                                                                            src={testimonial.image_url}
+                                                                            alt={testimonial.name}
+                                                                            className="w-full h-full object-cover"
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                                <div>
+                                                                    <h3 className="text-sm font-semibold line-clamp-1">{testimonial.name}</h3>
+                                                                    {testimonial.role && (
+                                                                        <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{testimonial.message}</p>
+                                                            <Badge variant={testimonial.is_active ? 'default' : 'outline'} className="text-xs">
+                                                                {testimonial.is_active ? 'Active' : 'Inactive'}
+                                                            </Badge>
+                                                        </div>
+                                                        <div className="flex gap-1">
+                                                            <Button onClick={() => setEditingTestimonial(testimonial.id)} variant="outline" size="icon-sm">
+                                                                <Edit size={14} />
+                                                            </Button>
+                                                            <Button onClick={() => deleteTestimonial(testimonial.id)} variant="outline" size="icon-sm" className="border-destructive text-destructive hover:bg-destructive/10">
+                                                                <Trash2 size={14} />
+                                                            </Button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>

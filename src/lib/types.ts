@@ -24,6 +24,16 @@ export interface PortfolioItem {
     updated_at: string
 }
 
+export interface Testimonial {
+    id: string
+    created_at: string
+    name: string
+    role: string | null
+    message: string
+    image_url: string
+    is_active: boolean
+}
+
 export interface Booking {
     id: string
     name: string
@@ -41,3 +51,5 @@ export type BookingFormData = Omit<Booking, 'id' | 'status' | 'created_at' | 'up
 export type PackageFormData = Omit<Package, 'id' | 'created_at' | 'updated_at'>
 
 export type PortfolioItemFormData = Omit<PortfolioItem, 'id' | 'created_at' | 'updated_at'>
+
+export type TestimonialFormData = Omit<Testimonial, 'id' | 'created_at'>

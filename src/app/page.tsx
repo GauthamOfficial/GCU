@@ -1,12 +1,14 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
+import { Testimonial } from '@/lib/types'
 
 export default function Home() {
   const observerRef = useRef<IntersectionObserver | null>(null)
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
 
   useEffect(() => {
     // Create Intersection Observer for scroll animations
@@ -35,6 +37,22 @@ export default function Home() {
     return () => {
       observerRef.current?.disconnect()
     }
+  }, [testimonials])
+
+  useEffect(() => {
+    // Fetch testimonials
+    async function fetchTestimonials() {
+      try {
+        const response = await fetch('/api/testimonials')
+        if (response.ok) {
+          const data = await response.json()
+          setTestimonials(data)
+        }
+      } catch (error) {
+        console.error('Error fetching testimonials:', error)
+      }
+    }
+    fetchTestimonials()
   }, [])
 
   return (
@@ -138,6 +156,43 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      {testimonials.length > 0 && (
+        <section className="editorial-spacing bg-white">
+          <div className="container-editorial">
+            <h2 className="mb-16 text-center text-black scroll-animate opacity-100">What Our Clients Say</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {testimonials.map((testimonial, index) => (
+                <div
+                  key={testimonial.id}
+                  className="scroll-animate opacity-100 border-2 border-grey-200 rounded-lg p-6 bg-white shadow-sm"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="flex flex-col items-center text-center">
+                    {testimonial.image_url && (
+                      <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-black mb-4 bg-grey-100">
+                        <img
+                          src={testimonial.image_url}
+                          alt={testimonial.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <p className="text-grey-600 mb-4 leading-relaxed">
+                      "{testimonial.message}"
+                    </p>
+                    <p className="font-semibold text-black">{testimonial.name}</p>
+                    {testimonial.role && (
+                      <p className="text-sm text-grey-500">{testimonial.role}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   )
 }
