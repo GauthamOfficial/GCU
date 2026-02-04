@@ -102,7 +102,7 @@ export default function PortfolioPage() {
                             <div
                                 key={item.id}
                                 onClick={() => setSelectedItem(item)}
-                                className="group cursor-pointer border-2 border-black rounded-lg overflow-hidden hover:border-grey-700 transition-all duration-300 shadow-lg hover:shadow-xl scroll-animate"
+                                className="group cursor-pointer border border-grey-200 rounded-lg overflow-hidden hover:border-grey-300 transition-all duration-300 shadow-sm hover:shadow-lg scroll-animate"
                                 style={{ animationDelay: `${index * 0.05}s` }}
                             >
                                 <div className="aspect-video bg-grey-200 overflow-hidden">
@@ -116,7 +116,7 @@ export default function PortfolioPage() {
                                         <div className="w-full h-full bg-gradient-to-br from-grey-300 to-grey-400 group-hover:scale-105 transition-transform duration-500" />
                                     )}
                                 </div>
-                                <div className="p-4 bg-white border-t-2 border-black">
+                                <div className="p-4 bg-white">
                                     <h3 className="text-lg font-semibold mb-1 text-black">{item.title}</h3>
                                     <p className="text-sm uppercase tracking-wider text-grey-600">{item.category}</p>
                                 </div>
