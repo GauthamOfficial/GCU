@@ -125,7 +125,11 @@ export default function Home() {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="aspect-video bg-grey-100 mb-4 overflow-hidden rounded-md">
-                  <div className="w-full h-full bg-gradient-to-br from-grey-200 to-grey-300 group-hover:scale-105 transition-transform duration-500" />
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                 </div>
                 <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
                 <p className="text-muted-foreground">{service.description}</p>
@@ -286,34 +290,41 @@ const services = [
   {
     title: "Pre-shoot",
     description: "Romantic cinematic stories that showcase your love and connection in stunning locations before the big day.",
+    image: "/Categories/Pre shoot.jpg",
   },
   {
     title: "Music Video",
     description: "Creative visual storytelling that brings your music to life with professional direction, editing, and color grading.",
+    image: "/Categories/Music Video.jpg",
   },
   {
     title: "Birthday",
     description: "Celebrate life's milestones with vibrant, joyful videos that capture the energy and emotion of your special day.",
+    image: "/Categories/Birthday.jpg",
   },
-
   {
     title: "Traditional",
     description: "Honor heritage and culture with elegant films that respectfully preserve your family's most sacred traditions.",
+    image: "/Categories/Traditional.jpg",
   },
   {
     title: "Wedding Highlights",
     description: "Relive the magic of your wedding day with a cinematic highlight reel capturing the vows, emotions, and celebration.",
+    image: "/Categories/Wedding Highlights.jpg",
   },
   {
     title: "Travel Highlights",
     description: "Capture the essence of your journey with breathtaking travel films that document the landscapes, culture, and adventure.",
+    image: "/Categories/Travel Highlights.jpg",
   },
   {
     title: "Promotion Videos",
     description: "High-impact commercial videos designed to elevate your brand, showcase products, and engage your audience.",
+    image: "/Categories/Promotion Video.jpg",
   },
   {
     title: "Events",
     description: "From intimate corporate gatherings to grand galas, we capture every significant moment with professional coverage.",
+    image: "/Categories/events.jpg",
   },
 ]
