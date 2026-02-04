@@ -6,7 +6,7 @@ import { PortfolioItem } from '@/lib/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
-const categories = ['All', 'Birthday', 'Pre-shoot', 'Traditional', 'Event'] as const
+const categories = ['All', 'Birthday', 'Pre-shoot', 'Traditional', 'Event', 'Music Video', 'Travel Highlights', 'Wedding Highlights', 'Promotion Videos'] as const
 
 export default function PortfolioPage() {
     const [selectedCategory, setSelectedCategory] = useState<string>('All')

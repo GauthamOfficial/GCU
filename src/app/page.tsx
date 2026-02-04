@@ -70,7 +70,7 @@ export default function Home() {
               Memorable Moments
             </h1>
             <p className="text-xl md:text-2xl text-grey-300 mb-12 max-w-2xl opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-              Cinematic videos • Short Films • Pre-shoots • Traditional Events
+              Specializing in cinematic videos, pre-shoots, traditional events, music videos, travel highlights, wedding highlights, and promotion videos that capture your story.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
               <Button asChild size="lg" className="text-base px-8 py-6 h-auto">
@@ -100,7 +100,7 @@ export default function Home() {
                 className="group scroll-animate"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="aspect-[3/4] bg-grey-100 mb-4 overflow-hidden">
+                <div className="aspect-video bg-grey-100 mb-4 overflow-hidden rounded-md">
                   <div className="w-full h-full bg-gradient-to-br from-grey-200 to-grey-300 group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
@@ -261,14 +261,30 @@ const services = [
   },
   {
     title: "Pre-shoot",
-    description: "Romantic cinematic stories that showcase your love and connection before the big day.",
+    description: "Romantic cinematic stories that showcase your love and connection in stunning locations before the big day.",
   },
   {
     title: "Traditional",
-    description: "Honor heritage and culture with elegant films that preserve your family's traditions.",
+    description: "Honor heritage and culture with elegant films that respectfully preserve your family's most sacred traditions.",
+  },
+  {
+    title: "Wedding Highlights",
+    description: "Relive the magic of your wedding day with a cinematic highlight reel capturing the vows, emotions, and celebration.",
+  },
+  {
+    title: "Music Video",
+    description: "Creative visual storytelling that brings your music to life with professional direction, editing, and color grading.",
+  },
+  {
+    title: "Travel Highlights",
+    description: "Capture the essence of your journey with breathtaking travel films that document the landscapes, culture, and adventure.",
+  },
+  {
+    title: "Promotion Videos",
+    description: "High-impact commercial videos designed to elevate your brand, showcase products, and engage your audience.",
   },
   {
     title: "Events",
-    description: "From intimate gatherings to grand celebrations, we capture every meaningful moment.",
+    description: "From intimate corporate gatherings to grand galas, we capture every significant moment with professional coverage.",
   },
 ]

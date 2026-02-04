@@ -650,7 +650,7 @@ export default function AdminPage() {
                                                     />
                                                     <Select
                                                         value={item.category}
-                                                        onValueChange={(value) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, category: value as 'Birthday' | 'Pre-shoot' | 'Traditional' | 'Event' } : p))}
+                                                        onValueChange={(value) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, category: value as PortfolioItem['category'] } : p))}
                                                     >
                                                         <SelectTrigger>
                                                             <SelectValue />
@@ -660,6 +660,10 @@ export default function AdminPage() {
                                                             <SelectItem value="Pre-shoot">Pre-shoot</SelectItem>
                                                             <SelectItem value="Traditional">Traditional</SelectItem>
                                                             <SelectItem value="Event">Event</SelectItem>
+                                                            <SelectItem value="Music Video">Music Video</SelectItem>
+                                                            <SelectItem value="Travel Highlights">Travel Highlights</SelectItem>
+                                                            <SelectItem value="Wedding Highlights">Wedding Highlights</SelectItem>
+                                                            <SelectItem value="Promotion Videos">Promotion Videos</SelectItem>
                                                         </SelectContent>
                                                     </Select>
 
