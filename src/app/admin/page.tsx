@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { LogOut, Loader2, Edit, Save, X, Trash2, Plus, Upload, Image as ImageIcon } from 'lucide-react'
+import { LogOut, Loader2, Edit, Save, X, Trash2, Plus } from 'lucide-react'
 
 export default function AdminPage() {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -26,8 +26,6 @@ export default function AdminPage() {
     const [editingPackage, setEditingPackage] = useState<string | null>(null)
     const [editingPortfolio, setEditingPortfolio] = useState<string | null>(null)
     const [editingTestimonial, setEditingTestimonial] = useState<string | null>(null)
-    const [uploadingThumbnail, setUploadingThumbnail] = useState<string | null>(null)
-    const [uploadProgress, setUploadProgress] = useState<number>(0)
 
     useEffect(() => {
         checkAuth()
@@ -321,59 +319,6 @@ export default function AdminPage() {
         } catch (error) {
             console.error('Error deleting testimonial:', error)
             alert('Failed to delete testimonial. Please try again.')
-        }
-    }
-
-    async function uploadThumbnail(file: File, itemId: string) {
-        try {
-            setUploadingThumbnail(itemId)
-            setUploadProgress(0)
-
-            const supabase = createClient()
-
-            // Create unique filename
-            const fileExt = file.name.split('.').pop()
-            const fileName = `${itemId}-${Date.now()}.${fileExt}`
-            const filePath = `thumbnails/${fileName}`
-
-            // Upload to Supabase Storage
-            const { data, error: uploadError } = await supabase.storage
-                .from('portfolio')
-                .upload(filePath, file, {
-                    cacheControl: '3600',
-                    upsert: true
-                })
-
-            if (uploadError) {
-                console.error('Upload error:', uploadError)
-                alert('Failed to upload thumbnail')
-                return
-            }
-
-            // Get public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('portfolio')
-                .getPublicUrl(filePath)
-
-            // Update portfolio item with new thumbnail URL
-            const updatedItems = portfolioItems.map(p =>
-                p.id === itemId ? { ...p, thumbnail_url: publicUrl } : p
-            )
-            setPortfolioItems(updatedItems)
-
-            // Update in database
-            await supabase
-                .from('portfolio_items')
-                .update({ thumbnail_url: publicUrl })
-                .eq('id', itemId)
-
-            setUploadProgress(100)
-        } catch (error) {
-            console.error('Error uploading thumbnail:', error)
-            alert('Failed to upload thumbnail')
-        } finally {
-            setUploadingThumbnail(null)
-            setUploadProgress(0)
         }
     }
 
@@ -718,9 +663,9 @@ export default function AdminPage() {
                                                         </SelectContent>
                                                     </Select>
 
-                                                    {/* Thumbnail Upload */}
+                                                    {/* Thumbnail URL */}
                                                     <div className="space-y-2">
-                                                        <label className="text-sm font-semibold">Thumbnail Image</label>
+                                                        <label className="text-sm font-semibold">Thumbnail Image URL</label>
                                                         {item.thumbnail_url && (
                                                             <div className="relative w-full aspect-video bg-grey-100 rounded border overflow-hidden">
                                                                 <img
@@ -730,36 +675,10 @@ export default function AdminPage() {
                                                                 />
                                                             </div>
                                                         )}
-                                                        <div className="flex gap-2">
-                                                            <label
-                                                                htmlFor={`file-upload-${item.id}`}
-                                                                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm font-medium cursor-pointer transition-all"
-                                                            >
-                                                                <Upload size={16} />
-                                                                Choose File
-                                                            </label>
-                                                            <input
-                                                                id={`file-upload-${item.id}`}
-                                                                type="file"
-                                                                accept="image/*"
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files?.[0]
-                                                                    if (file) uploadThumbnail(file, item.id)
-                                                                }}
-                                                                className="hidden"
-                                                            />
-                                                            {uploadingThumbnail === item.id && (
-                                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                                    <Loader2 className="animate-spin" size={16} />
-                                                                    Uploading...
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                        <p className="text-xs text-muted-foreground">Or enter URL manually:</p>
                                                         <Input
                                                             value={item.thumbnail_url || ''}
                                                             onChange={(e) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, thumbnail_url: e.target.value } : p))}
-                                                            placeholder="Thumbnail URL"
+                                                            placeholder="GitHub raw URL or YouTube thumbnail URL"
                                                         />
                                                     </div>
 
