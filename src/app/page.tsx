@@ -84,18 +84,20 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative h-screen flex items-center overflow-hidden bg-black text-white">
-        {/* Background Video */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-        >
-          <source src="/videos/sigiriya.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        {/* YouTube Background Video */}
+        <iframe
+          src="https://www.youtube.com/embed/6M794-1rEh4?autoplay=1&mute=1&loop=1&playlist=6M794-1rEh4&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
+          className="absolute inset-0 w-full h-full pointer-events-none opacity-30"
+          allow="autoplay; encrypted-media"
+          style={{
+            border: 'none',
+            width: '100vw',
+            height: '100vh',
+            objectFit: 'cover',
+            transform: 'scale(1.5)'
+          }}
+          title="Background video"
+        />
 
         {/* Dark Overlay for better text readability */}
         <div className="absolute inset-0 bg-black/40" />
