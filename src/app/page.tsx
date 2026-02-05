@@ -133,7 +133,7 @@ export default function Home() {
             Specializing in cinematic videos, pre-shoots, traditional events, music videos, travel highlights, wedding highlights, and promotion videos that capture your story.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
-            <Button asChild size="lg" className="text-base px-8 py-6 h-auto">
+            <Button asChild size="lg" className="text-base px-8 py-6 h-auto hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-all duration-300">
               <Link href="/book">
                 Book a Shoot
                 <ArrowRight className="ml-2" size={20} />
