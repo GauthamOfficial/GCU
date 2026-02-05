@@ -4,11 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
-import { Testimonial } from '@/lib/types'
+import { Testimonial, PortfolioItem } from '@/lib/types'
+import { createClient } from '@/lib/supabase/client'
+import { convertMediaUrl } from '@/lib/utils'
 
 export default function Home() {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+  const [featuredWorks, setFeaturedWorks] = useState<PortfolioItem[]>([])
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
@@ -49,7 +52,28 @@ export default function Home() {
     return () => {
       observerRef.current?.disconnect()
     }
-  }, [testimonials])
+  }, [testimonials, featuredWorks])
+
+  useEffect(() => {
+    // Fetch featured works
+    async function fetchFeaturedWorks() {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('portfolio_items')
+          .select('*')
+          .order('display_order', { ascending: true })
+          .limit(3)
+
+        if (!error && data) {
+          setFeaturedWorks(data)
+        }
+      } catch (error) {
+        console.error('Error fetching featured works:', error)
+      }
+    }
+    fetchFeaturedWorks()
+  }, [])
 
   useEffect(() => {
     // Fetch testimonials
@@ -187,18 +211,37 @@ export default function Home() {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((item, index) => (
-              <div
-                key={item}
-                className="group cursor-pointer scroll-animate"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="aspect-video bg-grey-200 mb-3 overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-grey-300 to-grey-400 group-hover:scale-105 transition-transform duration-500" />
+            {featuredWorks.length > 0 ? (
+              featuredWorks.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="group cursor-pointer scroll-animate"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="aspect-video bg-grey-200 mb-3 overflow-hidden rounded-md border border-grey-200 hover:border-grey-300 transition-colors">
+                    {item.thumbnail_url ? (
+                      <img
+                        src={convertMediaUrl(item.thumbnail_url)}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-grey-300 to-grey-400 group-hover:scale-105 transition-transform duration-500" />
+                    )}
+                  </div>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-lg text-black mb-1">{item.title}</h3>
+                      <p className="text-sm uppercase tracking-wider text-muted-foreground">{item.category}</p>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm uppercase tracking-wider text-muted-foreground">Featured Project {item}</p>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-12 text-muted-foreground">
+                <p>Loading featured work...</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -219,105 +262,107 @@ export default function Home() {
             </Button>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* Testimonials Section */}
-      {testimonials.length > 0 && (
-        <section className="editorial-spacing bg-white">
-          <div className="container-editorial">
-            <h2 className="mb-16 text-center text-black opacity-100 scroll-animate">What Our Clients Say</h2>
+      {
+        testimonials.length > 0 && (
+          <section className="editorial-spacing bg-white">
+            <div className="container-editorial">
+              <h2 className="mb-16 text-center text-black opacity-100 scroll-animate">What Our Clients Say</h2>
 
-            {/* Carousel Container */}
-            <div className="relative">
-              {/* Navigation Arrows */}
-              {testimonials.length > 3 && (
-                <>
-                  {canScrollLeft && (
-                    <button
-                      onClick={() => {
-                        const container = document.getElementById('testimonials-scroll')
-                        if (container) {
-                          container.scrollBy({ left: -400, behavior: 'smooth' })
-                        }
-                      }}
-                      className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 w-12 h-12 rounded-full bg-black text-white flex opacity-50 md:opacity-100 items-center justify-center hover:bg-grey-800 transition-colors cursor-pointer border-2 border-black z-10"
-                      aria-label="Scroll left"
-                    >
-                      <ChevronLeft size={24} />
-                    </button>
-                  )}
-                  {canScrollRight && (
-                    <button
-                      onClick={() => {
-                        const container = document.getElementById('testimonials-scroll')
-                        if (container) {
-                          container.scrollBy({ left: 400, behavior: 'smooth' })
-                        }
-                      }}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 w-12 h-12 rounded-full bg-black text-white flex opacity-50 md:opacity-100 items-center justify-center hover:bg-grey-800 transition-colors cursor-pointer border-2 border-black z-10"
-                      aria-label="Scroll right"
-                    >
-                      <ChevronRight size={24} />
-                    </button>
-                  )}
-                </>
-              )}
+              {/* Carousel Container */}
+              <div className="relative">
+                {/* Navigation Arrows */}
+                {testimonials.length > 3 && (
+                  <>
+                    {canScrollLeft && (
+                      <button
+                        onClick={() => {
+                          const container = document.getElementById('testimonials-scroll')
+                          if (container) {
+                            container.scrollBy({ left: -400, behavior: 'smooth' })
+                          }
+                        }}
+                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 w-12 h-12 rounded-full bg-black text-white flex opacity-50 md:opacity-100 items-center justify-center hover:bg-grey-800 transition-colors cursor-pointer border-2 border-black z-10"
+                        aria-label="Scroll left"
+                      >
+                        <ChevronLeft size={24} />
+                      </button>
+                    )}
+                    {canScrollRight && (
+                      <button
+                        onClick={() => {
+                          const container = document.getElementById('testimonials-scroll')
+                          if (container) {
+                            container.scrollBy({ left: 400, behavior: 'smooth' })
+                          }
+                        }}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 w-12 h-12 rounded-full bg-black text-white flex opacity-50 md:opacity-100 items-center justify-center hover:bg-grey-800 transition-colors cursor-pointer border-2 border-black z-10"
+                        aria-label="Scroll right"
+                      >
+                        <ChevronRight size={24} />
+                      </button>
+                    )}
+                  </>
+                )}
 
-              {/* Scrollable Testimonials */}
-              <div
-                id="testimonials-scroll"
-                className="flex gap-6 overflow-x-auto scroll-smooth pb-4"
-                style={{
-                  scrollbarWidth: 'none',
-                  msOverflowStyle: 'none',
-                  WebkitOverflowScrolling: 'touch'
-                }}
-              >
-                {testimonials.map((testimonial, index) => (
-                  <div
-                    key={testimonial.id}
-                    className="flex-shrink-0 w-[350px] border-2 border-grey-200 rounded-lg p-6 bg-white shadow-sm opacity-100 scroll-animate"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <div className="flex flex-col items-center text-center h-full">
-                      {testimonial.image_url && (
-                        <div className="w-20 h-20 rounded-full overflow-hidden border border-grey-200 mb-4 bg-grey-100 shadow-sm">
-                          <img
-                            src={testimonial.image_url}
-                            alt={testimonial.name}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement
-                              target.style.display = 'none'
-                            }}
-                          />
-                        </div>
-                      )}
-                      <p className="text-grey-600 mb-4 leading-relaxed text-sm flex-grow">
-                        "{testimonial.message}"
-                      </p>
-                      <div>
-                        <p className="font-semibold text-black">{testimonial.name}</p>
-                        {testimonial.role && (
-                          <p className="text-xs text-grey-500 mt-1">{testimonial.role}</p>
+                {/* Scrollable Testimonials */}
+                <div
+                  id="testimonials-scroll"
+                  className="flex gap-6 overflow-x-auto scroll-smooth pb-4"
+                  style={{
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                    WebkitOverflowScrolling: 'touch'
+                  }}
+                >
+                  {testimonials.map((testimonial, index) => (
+                    <div
+                      key={testimonial.id}
+                      className="flex-shrink-0 w-[350px] border-2 border-grey-200 rounded-lg p-6 bg-white shadow-sm opacity-100 scroll-animate"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <div className="flex flex-col items-center text-center h-full">
+                        {testimonial.image_url && (
+                          <div className="w-20 h-20 rounded-full overflow-hidden border border-grey-200 mb-4 bg-grey-100 shadow-sm">
+                            <img
+                              src={testimonial.image_url}
+                              alt={testimonial.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement
+                                target.style.display = 'none'
+                              }}
+                            />
+                          </div>
                         )}
+                        <p className="text-grey-600 mb-4 leading-relaxed text-sm flex-grow">
+                          "{testimonial.message}"
+                        </p>
+                        <div>
+                          <p className="font-semibold text-black">{testimonial.name}</p>
+                          {testimonial.role && (
+                            <p className="text-xs text-grey-500 mt-1">{testimonial.role}</p>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              {/* Hide scrollbar */}
-              <style jsx>{`
+                {/* Hide scrollbar */}
+                <style jsx>{`
                 #testimonials-scroll::-webkit-scrollbar {
                   display: none;
                 }
               `}</style>
+              </div>
             </div>
-          </div>
-        </section>
-      )}
-    </div>
+          </section>
+        )
+      }
+    </div >
   )
 }
 
