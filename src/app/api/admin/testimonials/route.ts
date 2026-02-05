@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(testimonial)
 }
 
-// PATCH - Update testimonial (admin)
+// PATCH - Update testimonial OR reorder testimonials (admin)
 export async function PATCH(request: NextRequest) {
     const adminPassword = request.headers.get('x-admin-password')
     if (adminPassword !== process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
@@ -71,7 +71,34 @@ export async function PATCH(request: NextRequest) {
 
     const supabase = createAdminClient()
     const body = await request.json()
+    const { searchParams } = new URL(request.url)
+    const action = searchParams.get('action')
 
+    // Handle bulk reorder
+    if (action === 'reorder') {
+        const { items } = body
+
+        if (!items || !Array.isArray(items)) {
+            return NextResponse.json({ error: 'Items array required' }, { status: 400 })
+        }
+
+        // Update all items in sequence
+        for (const item of items) {
+            const { error } = await supabase
+                .from('testimonials')
+                .update({ display_order: item.display_order })
+                .eq('id', item.id)
+
+            if (error) {
+                console.error('Error reordering testimonial:', error)
+                return NextResponse.json({ error: error.message }, { status: 500 })
+            }
+        }
+
+        return NextResponse.json({ success: true })
+    }
+
+    // Handle single item update
     const { id, name, role, message, image_url, is_active } = body
 
     if (!id) {

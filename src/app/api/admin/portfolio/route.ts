@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     }
 }
 
-// PATCH - Update portfolio item (admin only)
+// PATCH - Update portfolio item OR reorder items (admin only)
 export async function PATCH(request: NextRequest) {
     try {
         // Check admin password
@@ -86,6 +86,35 @@ export async function PATCH(request: NextRequest) {
         }
 
         const body = await request.json()
+        const { searchParams } = new URL(request.url)
+        const action = searchParams.get('action')
+
+        // Handle bulk reorder
+        if (action === 'reorder') {
+            const { items } = body
+
+            if (!items || !Array.isArray(items)) {
+                return NextResponse.json({ error: 'Items array required' }, { status: 400 })
+            }
+
+            const adminClient = createAdminClient()
+
+            // Update all items in sequence
+            for (const item of items) {
+                const { error } = await adminClient
+                    .from('portfolio_items')
+                    .update({ display_order: item.display_order })
+                    .eq('id', item.id)
+
+                if (error) {
+                    return NextResponse.json({ error: error.message }, { status: 500 })
+                }
+            }
+
+            return NextResponse.json({ success: true })
+        }
+
+        // Handle single item update
         const { id, ...updates } = body
 
         if (!id) {

@@ -8,7 +8,7 @@ export async function GET() {
         .from('testimonials')
         .select('*')
         .eq('is_active', true)
-        .order('created_at', { ascending: false })
+        .order('display_order', { ascending: true })
 
     if (error) {
         console.error('Error fetching testimonials:', error)

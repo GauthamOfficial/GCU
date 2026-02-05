@@ -32,6 +32,7 @@ export interface Testimonial {
     message: string
     image_url: string
     is_active: boolean
+    display_order: number
 }
 
 export interface Booking {

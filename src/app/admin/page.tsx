@@ -10,7 +10,25 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { LogOut, Loader2, Edit, Save, X, Trash2, Plus } from 'lucide-react'
+import { LogOut, Loader2, Edit, Save, X, Trash2, Plus, GripVertical } from 'lucide-react'
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent,
+} from '@dnd-kit/core'
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { SortablePortfolioItem, SortableTestimonialItem } from '@/components/admin/SortableItems'
 
 export default function AdminPage() {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -349,6 +367,98 @@ export default function AdminPage() {
         }
     }
 
+    // Drag-and-Drop Sensors
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    )
+
+    // Portfolio Reorder Handler
+    async function handlePortfolioDragEnd(event: DragEndEvent) {
+        const { active, over } = event
+
+        if (!over || active.id === over.id) return
+
+        const oldIndex = portfolioItems.findIndex(item => item.id === active.id)
+        const newIndex = portfolioItems.findIndex(item => item.id === over.id)
+
+        const reorderedItems = arrayMove(portfolioItems, oldIndex, newIndex)
+
+        // Optimistic update
+        setPortfolioItems(reorderedItems)
+
+        // Update display_order for all items
+        const updates = reorderedItems.map((item, index) => ({
+            id: item.id,
+            display_order: index
+        }))
+
+        try {
+            const response = await fetch('/api/admin/portfolio?action=reorder', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                },
+                body: JSON.stringify({ items: updates })
+            })
+
+            if (!response.ok) {
+                // Revert on error
+                setPortfolioItems(portfolioItems)
+                alert('Failed to reorder items')
+            }
+        } catch (error) {
+            console.error('Error reordering portfolio:', error)
+            setPortfolioItems(portfolioItems)
+            alert('Failed to reorder items')
+        }
+    }
+
+    // Testimonials Reorder Handler
+    async function handleTestimonialsDragEnd(event: DragEndEvent) {
+        const { active, over } = event
+
+        if (!over || active.id === over.id) return
+
+        const oldIndex = testimonials.findIndex(item => item.id === active.id)
+        const newIndex = testimonials.findIndex(item => item.id === over.id)
+
+        const reorderedItems = arrayMove(testimonials, oldIndex, newIndex)
+
+        // Optimistic update
+        setTestimonials(reorderedItems)
+
+        // Update display_order for all items
+        const updates = reorderedItems.map((item, index) => ({
+            id: item.id,
+            display_order: index
+        }))
+
+        try {
+            const response = await fetch('/api/admin/testimonials?action=reorder', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
+                },
+                body: JSON.stringify({ items: updates })
+            })
+
+            if (!response.ok) {
+                // Revert on error
+                setTestimonials(testimonials)
+                alert('Failed to reorder items')
+            }
+        } catch (error) {
+            console.error('Error reordering testimonials:', error)
+            setTestimonials(testimonials)
+            alert('Failed to reorder items')
+        }
+    }
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -683,138 +793,149 @@ export default function AdminPage() {
                             {portfolioItems.length === 0 ? (
                                 <p className="text-center text-muted-foreground py-8">No portfolio items yet</p>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                                    {portfolioItems.map((item) => (
-                                        <div key={item.id} className="border rounded-lg p-3">
-                                            {editingPortfolio === item.id ? (
-                                                <div className="space-y-4">
-                                                    <Input
-                                                        value={item.title}
-                                                        onChange={(e) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, title: e.target.value } : p))}
-                                                        placeholder="Title"
-                                                    />
-                                                    <Textarea
-                                                        value={item.description || ''}
-                                                        onChange={(e) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, description: e.target.value } : p))}
-                                                        placeholder="Description"
-                                                    />
-                                                    <Select
-                                                        value={item.category}
-                                                        onValueChange={(value) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, category: value as PortfolioItem['category'] } : p))}
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="Birthday">Birthday</SelectItem>
-                                                            <SelectItem value="Pre-shoot">Pre-shoot</SelectItem>
-                                                            <SelectItem value="Traditional">Traditional</SelectItem>
-                                                            <SelectItem value="Event">Event</SelectItem>
-                                                            <SelectItem value="Music Video">Music Video</SelectItem>
-                                                            <SelectItem value="Travel Highlights">Travel Highlights</SelectItem>
-                                                            <SelectItem value="Wedding Highlights">Wedding Highlights</SelectItem>
-                                                            <SelectItem value="Promotion Videos">Promotion Videos</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
+                                <DndContext
+                                    sensors={sensors}
+                                    collisionDetection={closestCenter}
+                                    onDragEnd={handlePortfolioDragEnd}
+                                >
+                                    <SortableContext
+                                        items={portfolioItems.map(i => i.id)}
+                                        strategy={verticalListSortingStrategy}
+                                    >
+                                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                            {portfolioItems.map((item) => (
+                                                <SortablePortfolioItem key={item.id} item={item}>
+                                                    {editingPortfolio === item.id ? (
+                                                        <div className="space-y-4">
+                                                            <Input
+                                                                value={item.title}
+                                                                onChange={(e) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, title: e.target.value } : p))}
+                                                                placeholder="Title"
+                                                            />
+                                                            <Textarea
+                                                                value={item.description || ''}
+                                                                onChange={(e) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, description: e.target.value } : p))}
+                                                                placeholder="Description"
+                                                            />
+                                                            <Select
+                                                                value={item.category}
+                                                                onValueChange={(value) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, category: value as PortfolioItem['category'] } : p))}
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="Birthday">Birthday</SelectItem>
+                                                                    <SelectItem value="Pre-shoot">Pre-shoot</SelectItem>
+                                                                    <SelectItem value="Traditional">Traditional</SelectItem>
+                                                                    <SelectItem value="Event">Event</SelectItem>
+                                                                    <SelectItem value="Music Video">Music Video</SelectItem>
+                                                                    <SelectItem value="Travel Highlights">Travel Highlights</SelectItem>
+                                                                    <SelectItem value="Wedding Highlights">Wedding Highlights</SelectItem>
+                                                                    <SelectItem value="Promotion Videos">Promotion Videos</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
 
-                                                    {/* Thumbnail URL */}
-                                                    <div className="space-y-2">
-                                                        <label className="text-sm font-semibold">Thumbnail Image URL</label>
-                                                        {item.thumbnail_url && (
-                                                            <div className="relative w-full aspect-video bg-grey-100 rounded border overflow-hidden">
-                                                                <img
-                                                                    src={item.thumbnail_url}
-                                                                    alt="Thumbnail preview"
-                                                                    className="w-full h-full object-cover"
+                                                            {/* Thumbnail URL */}
+                                                            <div className="space-y-2">
+                                                                <label className="text-sm font-semibold">Thumbnail Image URL</label>
+                                                                {item.thumbnail_url && (
+                                                                    <div className="relative w-full aspect-video bg-grey-100 rounded border overflow-hidden">
+                                                                        <img
+                                                                            src={item.thumbnail_url}
+                                                                            alt="Thumbnail preview"
+                                                                            className="w-full h-full object-cover"
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                                <Input
+                                                                    value={item.thumbnail_url || ''}
+                                                                    onChange={(e) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, thumbnail_url: e.target.value } : p))}
+                                                                    placeholder="GitHub raw URL or YouTube thumbnail URL"
                                                                 />
                                                             </div>
-                                                        )}
-                                                        <Input
-                                                            value={item.thumbnail_url || ''}
-                                                            onChange={(e) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, thumbnail_url: e.target.value } : p))}
-                                                            placeholder="GitHub raw URL or YouTube thumbnail URL"
-                                                        />
-                                                    </div>
 
-                                                    <Input
-                                                        value={item.video_url || ''}
-                                                        onChange={(e) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, video_url: e.target.value } : p))}
-                                                        placeholder="Video URL"
-                                                    />
-                                                    <div className="flex gap-2">
-                                                        <Button onClick={() => {
-                                                            // Validate required fields
-                                                            if (!item.title.trim()) {
-                                                                alert('Please enter a title')
-                                                                return
-                                                            }
-                                                            if (!item.video_url.trim()) {
-                                                                alert('Please enter a video URL')
-                                                                return
-                                                            }
-
-                                                            if (item.id.startsWith('new-')) {
-                                                                // New item - create it
-                                                                createPortfolioItem({
-                                                                    title: item.title,
-                                                                    category: item.category,
-                                                                    video_url: item.video_url,
-                                                                    thumbnail_url: item.thumbnail_url,
-                                                                    description: item.description,
-                                                                    display_order: item.display_order
-                                                                }).then(() => {
-                                                                    setPortfolioItems(portfolioItems.filter(p => p.id !== item.id))
-                                                                    setEditingPortfolio(null)
-                                                                })
-                                                            } else {
-                                                                // Existing item - update it
-                                                                updatePortfolioItem(item)
-                                                            }
-                                                        }} size="sm">
-                                                            <Save className="mr-2" size={16} />
-                                                            Save
-                                                        </Button>
-                                                        <Button onClick={() => {
-                                                            if (item.id.startsWith('new-')) {
-                                                                setPortfolioItems(portfolioItems.filter(p => p.id !== item.id))
-                                                            }
-                                                            setEditingPortfolio(null)
-                                                        }} variant="outline" size="sm">
-                                                            <X className="mr-2" size={16} />
-                                                            Cancel
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div>
-                                                    <div className="flex items-start justify-between mb-2">
-                                                        <div className="flex-1">
-                                                            <h3 className="text-sm font-semibold mb-1 line-clamp-1">{item.title}</h3>
-                                                            <Badge variant="outline" className="text-xs">{item.category}</Badge>
-                                                        </div>
-                                                        <div className="flex gap-1">
-                                                            <Button onClick={() => setEditingPortfolio(item.id)} variant="outline" size="icon-sm">
-                                                                <Edit size={14} />
-                                                            </Button>
-                                                            <Button onClick={() => deletePortfolioItem(item.id)} variant="outline" size="icon-sm" className="border-destructive text-destructive hover:bg-destructive/10">
-                                                                <Trash2 size={14} />
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                    {item.thumbnail_url && (
-                                                        <div className="w-full aspect-video bg-grey-100 rounded border overflow-hidden">
-                                                            <img
-                                                                src={item.thumbnail_url}
-                                                                alt={item.title}
-                                                                className="w-full h-full object-cover"
+                                                            <Input
+                                                                value={item.video_url || ''}
+                                                                onChange={(e) => setPortfolioItems(portfolioItems.map(p => p.id === item.id ? { ...p, video_url: e.target.value } : p))}
+                                                                placeholder="Video URL"
                                                             />
+                                                            <div className="flex gap-2">
+                                                                <Button onClick={() => {
+                                                                    // Validate required fields
+                                                                    if (!item.title.trim()) {
+                                                                        alert('Please enter a title')
+                                                                        return
+                                                                    }
+                                                                    if (!item.video_url.trim()) {
+                                                                        alert('Please enter a video URL')
+                                                                        return
+                                                                    }
+
+                                                                    if (item.id.startsWith('new-')) {
+                                                                        // New item - create it
+                                                                        createPortfolioItem({
+                                                                            title: item.title,
+                                                                            category: item.category,
+                                                                            video_url: item.video_url,
+                                                                            thumbnail_url: item.thumbnail_url,
+                                                                            description: item.description,
+                                                                            display_order: item.display_order
+                                                                        }).then(() => {
+                                                                            setPortfolioItems(portfolioItems.filter(p => p.id !== item.id))
+                                                                            setEditingPortfolio(null)
+                                                                        })
+                                                                    } else {
+                                                                        // Existing item - update it
+                                                                        updatePortfolioItem(item)
+                                                                    }
+                                                                }} size="sm">
+                                                                    <Save className="mr-2" size={16} />
+                                                                    Save
+                                                                </Button>
+                                                                <Button onClick={() => {
+                                                                    if (item.id.startsWith('new-')) {
+                                                                        setPortfolioItems(portfolioItems.filter(p => p.id !== item.id))
+                                                                    }
+                                                                    setEditingPortfolio(null)
+                                                                }} variant="outline" size="sm">
+                                                                    <X className="mr-2" size={16} />
+                                                                    Cancel
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div>
+                                                            <div className="flex items-start justify-between mb-2">
+                                                                <div className="flex-1">
+                                                                    <h3 className="text-sm font-semibold mb-1 line-clamp-1">{item.title}</h3>
+                                                                    <Badge variant="outline" className="text-xs">{item.category}</Badge>
+                                                                </div>
+                                                                <div className="flex gap-1">
+                                                                    <Button onClick={() => setEditingPortfolio(item.id)} variant="outline" size="icon-sm">
+                                                                        <Edit size={14} />
+                                                                    </Button>
+                                                                    <Button onClick={() => deletePortfolioItem(item.id)} variant="outline" size="icon-sm" className="border-destructive text-destructive hover:bg-destructive/10">
+                                                                        <Trash2 size={14} />
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                            {item.thumbnail_url && (
+                                                                <div className="w-full aspect-video bg-grey-100 rounded border overflow-hidden">
+                                                                    <img
+                                                                        src={item.thumbnail_url}
+                                                                        alt={item.title}
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
-                                                </div>
-                                            )}
+                                                </SortablePortfolioItem>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
+                                    </SortableContext>
+                                </DndContext>
                             )}
                         </CardContent>
                     </Card>
@@ -838,7 +959,8 @@ export default function AdminPage() {
                                             role: '',
                                             message: '',
                                             image_url: '',
-                                            is_active: true
+                                            is_active: true,
+                                            display_order: 0
                                         }
                                         setTestimonials([newTestimonial, ...testimonials])
                                         setEditingTestimonial(newTestimonial.id)
@@ -853,115 +975,40 @@ export default function AdminPage() {
                             {testimonials.length === 0 ? (
                                 <p className="text-center text-muted-foreground py-8">No testimonials yet</p>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                    {testimonials.map((testimonial) => (
-                                        <div key={testimonial.id} className="border rounded-lg p-3">
-                                            {editingTestimonial === testimonial.id ? (
-                                                <div className="space-y-3">
-                                                    <Input
-                                                        value={testimonial.name}
-                                                        onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, name: e.target.value } : t))}
-                                                        placeholder="Name"
-                                                    />
-                                                    <Input
-                                                        value={testimonial.role || ''}
-                                                        onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, role: e.target.value } : t))}
-                                                        placeholder="Role (optional)"
-                                                    />
-                                                    <Textarea
-                                                        value={testimonial.message}
-                                                        onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, message: e.target.value } : t))}
-                                                        placeholder="Testimonial message"
-                                                        rows={3}
-                                                    />
-                                                    <div className="space-y-2">
-                                                        <label className="text-sm font-semibold">Profile Image URL</label>
-                                                        {testimonial.image_url && (
-                                                            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-grey-300 mx-auto">
-                                                                <img
-                                                                    src={testimonial.image_url}
-                                                                    alt={testimonial.name}
-                                                                    className="w-full h-full object-cover"
-                                                                />
-                                                            </div>
-                                                        )}
-                                                        <Input
-                                                            value={testimonial.image_url}
-                                                            onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, image_url: e.target.value } : t))}
-                                                            placeholder="Google Drive image URL"
-                                                        />
-                                                        <p className="text-xs text-muted-foreground">Use a Google Drive or direct image URL</p>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={testimonial.is_active}
-                                                            onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, is_active: e.target.checked } : t))}
-                                                            className="w-4 h-4"
-                                                        />
-                                                        <label className="text-sm">Active (visible on website)</label>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        <Button
-                                                            onClick={() => {
-                                                                // Validate required fields
-                                                                if (!testimonial.name.trim()) {
-                                                                    alert('Please enter a name')
-                                                                    return
-                                                                }
-                                                                if (!testimonial.message.trim()) {
-                                                                    alert('Please enter a testimonial message')
-                                                                    return
-                                                                }
-                                                                if (!testimonial.image_url.trim()) {
-                                                                    alert('Please enter an image URL')
-                                                                    return
-                                                                }
-
-                                                                if (testimonial.id.startsWith('new-')) {
-                                                                    // New testimonial - create it
-                                                                    createTestimonial({
-                                                                        name: testimonial.name,
-                                                                        role: testimonial.role,
-                                                                        message: testimonial.message,
-                                                                        image_url: testimonial.image_url,
-                                                                        is_active: testimonial.is_active
-                                                                    }).then(() => {
-                                                                        // Remove the temporary one from state
-                                                                        setTestimonials(testimonials.filter(t => t.id !== testimonial.id))
-                                                                        setEditingTestimonial(null)
-                                                                    }).catch(() => {
-                                                                        // Error already handled in createTestimonial
-                                                                    })
-                                                                } else {
-                                                                    // Existing testimonial - update it
-                                                                    updateTestimonial(testimonial)
-                                                                }
-                                                            }}
-                                                            size="sm"
-                                                        >
-                                                            <Save className="mr-2" size={16} />
-                                                            Save
-                                                        </Button>
-                                                        <Button onClick={() => {
-                                                            if (testimonial.id.startsWith('new-')) {
-                                                                // Cancel new testimonial - remove from state
-                                                                setTestimonials(testimonials.filter(t => t.id !== testimonial.id))
-                                                            }
-                                                            setEditingTestimonial(null)
-                                                        }} variant="outline" size="sm">
-                                                            <X className="mr-2" size={16} />
-                                                            Cancel
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div>
-                                                    <div className="flex items-start justify-between mb-2">
-                                                        <div className="flex-1">
-                                                            <div className="flex items-center gap-2 mb-2">
+                                <DndContext
+                                    sensors={sensors}
+                                    collisionDetection={closestCenter}
+                                    onDragEnd={handleTestimonialsDragEnd}
+                                >
+                                    <SortableContext
+                                        items={testimonials.map(t => t.id)}
+                                        strategy={verticalListSortingStrategy}
+                                    >
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            {testimonials.map((testimonial) => (
+                                                <SortableTestimonialItem key={testimonial.id} item={testimonial}>
+                                                    {editingTestimonial === testimonial.id ? (
+                                                        <div className="space-y-3">
+                                                            <Input
+                                                                value={testimonial.name}
+                                                                onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, name: e.target.value } : t))}
+                                                                placeholder="Name"
+                                                            />
+                                                            <Input
+                                                                value={testimonial.role || ''}
+                                                                onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, role: e.target.value } : t))}
+                                                                placeholder="Role (optional)"
+                                                            />
+                                                            <Textarea
+                                                                value={testimonial.message}
+                                                                onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, message: e.target.value } : t))}
+                                                                placeholder="Testimonial message"
+                                                                rows={3}
+                                                            />
+                                                            <div className="space-y-2">
+                                                                <label className="text-sm font-semibold">Profile Image URL</label>
                                                                 {testimonial.image_url && (
-                                                                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-grey-300">
+                                                                    <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-grey-300 mx-auto">
                                                                         <img
                                                                             src={testimonial.image_url}
                                                                             alt={testimonial.name}
@@ -969,32 +1016,119 @@ export default function AdminPage() {
                                                                         />
                                                                     </div>
                                                                 )}
-                                                                <div>
-                                                                    <h3 className="text-sm font-semibold line-clamp-1">{testimonial.name}</h3>
-                                                                    {testimonial.role && (
-                                                                        <p className="text-xs text-muted-foreground">{testimonial.role}</p>
-                                                                    )}
+                                                                <Input
+                                                                    value={testimonial.image_url}
+                                                                    onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, image_url: e.target.value } : t))}
+                                                                    placeholder="Google Drive image URL"
+                                                                />
+                                                                <p className="text-xs text-muted-foreground">Use a Google Drive or direct image URL</p>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={testimonial.is_active}
+                                                                    onChange={(e) => setTestimonials(testimonials.map(t => t.id === testimonial.id ? { ...t, is_active: e.target.checked } : t))}
+                                                                    className="w-4 h-4"
+                                                                />
+                                                                <label className="text-sm">Active (visible on website)</label>
+                                                            </div>
+                                                            <div className="flex gap-2">
+                                                                <Button
+                                                                    onClick={() => {
+                                                                        // Validate required fields
+                                                                        if (!testimonial.name.trim()) {
+                                                                            alert('Please enter a name')
+                                                                            return
+                                                                        }
+                                                                        if (!testimonial.message.trim()) {
+                                                                            alert('Please enter a testimonial message')
+                                                                            return
+                                                                        }
+                                                                        if (!testimonial.image_url.trim()) {
+                                                                            alert('Please enter an image URL')
+                                                                            return
+                                                                        }
+
+                                                                        if (testimonial.id.startsWith('new-')) {
+                                                                            // New testimonial - create it
+                                                                            createTestimonial({
+                                                                                name: testimonial.name,
+                                                                                role: testimonial.role,
+                                                                                message: testimonial.message,
+                                                                                image_url: testimonial.image_url,
+                                                                                is_active: testimonial.is_active,
+                                                                                display_order: testimonial.display_order
+                                                                            }).then(() => {
+                                                                                // Remove the temporary one from state
+                                                                                setTestimonials(testimonials.filter(t => t.id !== testimonial.id))
+                                                                                setEditingTestimonial(null)
+                                                                            }).catch(() => {
+                                                                                // Error already handled in createTestimonial
+                                                                            })
+                                                                        } else {
+                                                                            // Existing testimonial - update it
+                                                                            updateTestimonial(testimonial)
+                                                                        }
+                                                                    }}
+                                                                    size="sm"
+                                                                >
+                                                                    <Save className="mr-2" size={16} />
+                                                                    Save
+                                                                </Button>
+                                                                <Button onClick={() => {
+                                                                    if (testimonial.id.startsWith('new-')) {
+                                                                        // Cancel new testimonial - remove from state
+                                                                        setTestimonials(testimonials.filter(t => t.id !== testimonial.id))
+                                                                    }
+                                                                    setEditingTestimonial(null)
+                                                                }} variant="outline" size="sm">
+                                                                    <X className="mr-2" size={16} />
+                                                                    Cancel
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div>
+                                                            <div className="flex items-start justify-between mb-2">
+                                                                <div className="flex-1">
+                                                                    <div className="flex items-center gap-2 mb-2">
+                                                                        {testimonial.image_url && (
+                                                                            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-grey-300">
+                                                                                <img
+                                                                                    src={testimonial.image_url}
+                                                                                    alt={testimonial.name}
+                                                                                    className="w-full h-full object-cover"
+                                                                                />
+                                                                            </div>
+                                                                        )}
+                                                                        <div>
+                                                                            <h3 className="text-sm font-semibold line-clamp-1">{testimonial.name}</h3>
+                                                                            {testimonial.role && (
+                                                                                <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                    <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{testimonial.message}</p>
+                                                                    <Badge variant={testimonial.is_active ? 'default' : 'outline'} className="text-xs">
+                                                                        {testimonial.is_active ? 'Active' : 'Inactive'}
+                                                                    </Badge>
+                                                                </div>
+                                                                <div className="flex gap-1">
+                                                                    <Button onClick={() => setEditingTestimonial(testimonial.id)} variant="outline" size="icon-sm">
+                                                                        <Edit size={14} />
+                                                                    </Button>
+                                                                    <Button onClick={() => deleteTestimonial(testimonial.id)} variant="outline" size="icon-sm" className="border-destructive text-destructive hover:bg-destructive/10">
+                                                                        <Trash2 size={14} />
+                                                                    </Button>
                                                                 </div>
                                                             </div>
-                                                            <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{testimonial.message}</p>
-                                                            <Badge variant={testimonial.is_active ? 'default' : 'outline'} className="text-xs">
-                                                                {testimonial.is_active ? 'Active' : 'Inactive'}
-                                                            </Badge>
                                                         </div>
-                                                        <div className="flex gap-1">
-                                                            <Button onClick={() => setEditingTestimonial(testimonial.id)} variant="outline" size="icon-sm">
-                                                                <Edit size={14} />
-                                                            </Button>
-                                                            <Button onClick={() => deleteTestimonial(testimonial.id)} variant="outline" size="icon-sm" className="border-destructive text-destructive hover:bg-destructive/10">
-                                                                <Trash2 size={14} />
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
+                                                    )}
+                                                </SortableTestimonialItem>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
+                                    </SortableContext>
+                                </DndContext>
                             )}
                         </CardContent>
                     </Card>
