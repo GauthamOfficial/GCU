@@ -91,7 +91,7 @@ export default function Home() {
           muted
           playsInline
           preload="auto"
-          className="absolute pointer-events-none opacity-30 hero-video"
+          className="absolute pointer-events-none opacity-40 hero-video"
         >
           <source src="https://res.cloudinary.com/dk8aibvnn/video/upload/v1770283350/Sigiriya_ncyree.mp4" type="video/mp4" />
         </video>
