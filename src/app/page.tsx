@@ -83,32 +83,44 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="editorial-spacing bg-black text-white">
-        <div className="container-editorial">
-          <div className="max-w-4xl">
-            <h1 className="text-balance mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-              Cinematic Storytelling
-              <br />
-              For Your Most
-              <br />
-              Memorable Moments
-            </h1>
-            <p className="text-xl md:text-2xl text-grey-300 mb-12 max-w-2xl opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-              Specializing in cinematic videos, pre-shoots, traditional events, music videos, travel highlights, wedding highlights, and promotion videos that capture your story.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
-              <Button asChild size="lg" className="text-base px-8 py-6 h-auto">
-                <Link href="/book">
-                  Book a Shoot
-                  <ArrowRight className="ml-2" size={20} />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 h-auto bg-transparent border-white text-white hover:bg-white hover:text-black">
-                <Link href="/portfolio">
-                  View Portfolio
-                </Link>
-              </Button>
-            </div>
+      <section className="relative h-screen flex items-center overflow-hidden bg-black text-white">
+        {/* Background Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        >
+          <source src="/videos/Sigiriya(1).mp4" type="video/mp4" />
+        </video>
+
+        {/* Dark Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/40" />
+
+        <div className="max-w-7xl relative z-10 px-8 md:px-16 lg:px-24">
+          <h1 className="text-balance mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
+            Cinematic Storytelling
+            <br />
+            For Your Most
+            <br />
+            Memorable Moments
+          </h1>
+          <p className="text-xl md:text-2xl text-grey-300 mb-12 max-w-2xl opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
+            Specializing in cinematic videos, pre-shoots, traditional events, music videos, travel highlights, wedding highlights, and promotion videos that capture your story.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
+            <Button asChild size="lg" className="text-base px-8 py-6 h-auto">
+              <Link href="/book">
+                Book a Shoot
+                <ArrowRight className="ml-2" size={20} />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 h-auto bg-transparent border-white text-white hover:bg-white hover:text-black">
+              <Link href="/portfolio">
+                View Portfolio
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
