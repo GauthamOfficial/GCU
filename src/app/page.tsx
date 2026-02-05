@@ -84,20 +84,39 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative h-screen flex items-center overflow-hidden bg-black text-white">
-        {/* YouTube Background Video */}
-        <iframe
-          src="https://www.youtube.com/embed/6M794-1rEh4?autoplay=1&mute=1&loop=1&playlist=6M794-1rEh4&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
-          className="absolute inset-0 w-full h-full pointer-events-none opacity-30"
-          allow="autoplay; encrypted-media"
-          style={{
-            border: 'none',
-            width: '100vw',
-            height: '100vh',
-            objectFit: 'cover',
-            transform: 'scale(1.5)'
-          }}
-          title="Background video"
-        />
+        {/* Cloudinary Background Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="absolute pointer-events-none opacity-30 hero-video"
+        >
+          <source src="https://res.cloudinary.com/dk8aibvnn/video/upload/v1770283350/Sigiriya_ncyree.mp4" type="video/mp4" />
+        </video>
+        <style jsx>{`
+          .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 177.77vw;
+            min-width: 100vw;
+            min-height: 100vh;
+            object-fit: cover;
+          }
+          @media (min-width: 768px) {
+            .hero-video {
+              width: 100vw;
+              height: 100vh;
+              min-width: 100%;
+              min-height: 100%;
+              object-fit: cover;
+            }
+          }
+        `}</style>
 
         {/* Dark Overlay for better text readability */}
         <div className="absolute inset-0 bg-black/40" />
