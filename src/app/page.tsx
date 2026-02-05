@@ -90,9 +90,11 @@ export default function Home() {
           loop
           muted
           playsInline
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover opacity-30"
         >
           <source src="/videos/Sigiriya(1).mp4" type="video/mp4" />
+          Your browser does not support the video tag.
         </video>
 
         {/* Dark Overlay for better text readability */}
