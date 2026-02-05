@@ -53,8 +53,17 @@ export default function Footer() {
                 </div>
 
                 {/* Copyright */}
-                <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
+                {/* Copyright */}
+                <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground gap-4">
                     <p>&copy; {new Date().getFullYear()} Cinezham. All rights reserved.</p>
+                    <div className="flex gap-6">
+                        <Link href="/privacy-policy" className="hover:text-foreground transition-colors">
+                            Privacy Policy
+                        </Link>
+                        <Link href="/terms-of-service" className="hover:text-foreground transition-colors">
+                            Terms of Service
+                        </Link>
+                    </div>
                 </div>
             </div>
         </footer>
