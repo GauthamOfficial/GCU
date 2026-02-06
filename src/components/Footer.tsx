@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Facebook, Instagram, Mail, Phone } from 'lucide-react'
 
 export default function Footer() {
     return (
@@ -8,9 +9,10 @@ export default function Footer() {
                     {/* Brand */}
                     <div>
                         <h3 className="text-2xl font-bold mb-4">Diffindo</h3>
-                        <p className="text-muted-foreground">
+                        <p className="text-muted-foreground mb-6">
                             Cinematic storytelling for your most memorable moments.
                         </p>
+
                     </div>
 
                     {/* Quick Links */}
@@ -34,20 +36,39 @@ export default function Footer() {
                         <h4 className="text-sm uppercase tracking-wider font-semibold mb-4">Get in Touch</h4>
                         <div className="flex flex-col gap-3 text-muted-foreground">
                             <a
-                                href="https://wa.me/94XXXXXXXXX"
+                                href="https://wa.me/94759819250"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="hover:text-foreground transition-colors"
+                                className="hover:text-foreground transition-colors flex items-center gap-2"
                             >
-                                WhatsApp: +94 75 981 9250
+                                <Phone size={18} />
+                                <span>+94 75 981 9250</span>
                             </a>
                             <a
-                                href="mailto:hello@studiogcu.lk"
-                                className="hover:text-foreground transition-colors"
+                                href="mailto:hello.diffindo@gmail.com"
+                                className="hover:text-foreground transition-colors flex items-center gap-2"
                             >
-                                hello@studiogcu.lk
+                                <Mail size={18} />
+                                <span>hello.diffindo@gmail.com</span>
                             </a>
-                            <p>Colombo, Sri Lanka</p>
+                            <a
+                                href="https://www.facebook.com/share/1875QM56TV/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-foreground transition-colors flex items-center gap-2"
+                            >
+                                <Facebook size={18} />
+                                <span>Diffindo</span>
+                            </a>
+                            <a
+                                href="https://www.instagram.com/diffindo.lk?igsh=NmdlcDcxYms1enZ2"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-foreground transition-colors flex items-center gap-2"
+                            >
+                                <Instagram size={18} />
+                                <span>Diffindo.lk</span>
+                            </a>
                         </div>
                     </div>
                 </div>
