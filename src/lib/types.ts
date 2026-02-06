@@ -1,4 +1,4 @@
-// Database Types for Cinezham
+// Database Types for Diffindo
 
 export interface Package {
     id: string

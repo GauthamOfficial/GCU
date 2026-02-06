@@ -154,7 +154,7 @@ export default function Home() {
             Memorable Moments
           </h1>
           <p className="text-xl md:text-2xl text-grey-300 mb-12 max-w-2xl opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-            Specializing in cinematic videos, pre-shoots, traditional events, music videos, travel highlights, wedding highlights, and promotion videos that capture your story.
+            Cinematic Videos | Pre-shoots | Traditional Events | Music Videos | Travel Highlights | Wedding Highlights | Promotion Videos
           </p>
           <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
             <Button asChild size="lg" className="text-base px-8 py-6 h-auto hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-all duration-300">

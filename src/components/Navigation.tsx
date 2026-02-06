@@ -29,7 +29,7 @@ export default function Navigation() {
                 <div className="flex items-center justify-between h-20">
                     {/* Logo */}
                     <Link href="/" className="text-2xl font-bold tracking-tight hover:opacity-70">
-                        CINEZHAM
+                        Diffindo
                     </Link>
 
                     {/* Desktop Navigation */}

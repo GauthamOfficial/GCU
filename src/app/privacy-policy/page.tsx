@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Privacy Policy | Cinezham',
-    description: 'Privacy Policy for Cinezham website.',
+    title: 'Privacy Policy | Diffindo',
+    description: 'Privacy Policy for Diffindo website.',
 };
 
 export default function PrivacyPolicy() {

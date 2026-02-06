@@ -11,12 +11,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Cinezham | Cinematic Reels & Short Films in Sri Lanka",
+  title: "Diffindo | Cinematic Reels & Short Films in Sri Lanka",
   description: "Premium cinematic storytelling for birthdays, pre-shoots, traditional shoots, and personal events in Sri Lanka. Book your shoot today.",
-  keywords: ["cinematic reels", "short films", "birthday videos", "pre-wedding shoots", "Sri Lanka videography", "Cinezham"],
-  authors: [{ name: "Cinezham" }],
+  keywords: ["cinematic reels", "short films", "birthday videos", "pre-wedding shoots", "Sri Lanka videography", "Diffindo"],
+  authors: [{ name: "Diffindo" }],
   openGraph: {
-    title: "Cinezham | Cinematic Reels & Short Films",
+    title: "Diffindo | Cinematic Reels & Short Films",
     description: "Premium cinematic storytelling for your most memorable moments in Sri Lanka.",
     type: "website",
   },

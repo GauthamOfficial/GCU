@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Terms of Service | Cinezham',
-    description: 'Terms of Service for Cinezham website.',
+    title: 'Terms of Service | Diffindo',
+    description: 'Terms of Service for Diffindo website.',
 };
 
 export default function TermsOfService() {

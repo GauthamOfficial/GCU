@@ -524,7 +524,7 @@ export default function AdminPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8 pb-6 border-b">
                     <div>
-                        <h1 className="text-3xl font-bold mb-2">Cinezham Admin</h1>
+                        <h1 className="text-3xl font-bold mb-2">Diffindo Admin</h1>
                         <p className="text-muted-foreground">Manage bookings, packages, and portfolio</p>
                     </div>
                     <Button onClick={handleSignOut} variant="outline">
