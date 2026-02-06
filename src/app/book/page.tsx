@@ -68,6 +68,8 @@ export default function BookPage() {
         setError('')
 
         const supabase = createClient()
+
+        // 1. Save to Database
         const { error: submitError } = await supabase
             .from('bookings')
             .insert([formData])
@@ -76,10 +78,28 @@ export default function BookPage() {
             console.error('Error submitting booking:', submitError)
             setError('Failed to submit booking. Please try again.')
             setLoading(false)
-        } else {
-            setSuccess(true)
-            setLoading(false)
+            return
         }
+
+        // 2. Send Email Notification
+        try {
+            const emailResponse = await fetch('/api/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+
+            if (!emailResponse.ok) {
+                console.warn('Booking saved but email notification failed')
+            }
+        } catch (err) {
+            console.error('Error sending email:', err)
+        }
+
+        setSuccess(true)
+        setLoading(false)
     }
 
     if (success) {
