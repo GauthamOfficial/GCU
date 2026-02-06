@@ -36,13 +36,13 @@ export default function Footer() {
                         <h4 className="text-sm uppercase tracking-wider font-semibold mb-4">Get in Touch</h4>
                         <div className="flex flex-col gap-3 text-muted-foreground">
                             <a
-                                href="https://wa.me/94759819250"
+                                href="https://wa.me/94704462999"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="hover:text-foreground transition-colors flex items-center gap-2"
                             >
                                 <Phone size={18} />
-                                <span>+94 75 981 9250</span>
+                                <span>+94 70 446 2999</span>
                             </a>
                             <a
                                 href="mailto:hello.diffindo@gmail.com"
