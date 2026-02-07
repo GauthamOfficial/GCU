@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Facebook, Instagram, Mail, Phone } from 'lucide-react'
+import Image from 'next/image'
 
 export default function Footer() {
     return (
@@ -8,7 +9,17 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     {/* Brand */}
                     <div>
-                        <h3 className="text-2xl font-bold mb-4 font-poppins">Diffindo.</h3>
+                        <div className="flex items-end gap-2 mb-4">
+                            <div className="relative w-10 h-10">
+                                <Image
+                                    src="/Diffindo Logo.png"
+                                    alt="Diffindo Logo"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                            <h3 className="text-2xl font-bold font-poppins translate-y-1">Diffindo.</h3>
+                        </div>
                         <p className="text-muted-foreground mb-6">
                             Cinematic storytelling for your most memorable moments.
                         </p>

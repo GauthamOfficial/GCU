@@ -29,7 +29,7 @@ export default function Navigation() {
             <div className="container-editorial">
                 <div className="flex items-center justify-between h-20">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
+                    <Link href="/" className="flex items-end gap-2 hover:opacity-70 transition-opacity">
                         <div className="relative w-10 h-10">
                             <Image
                                 src="/Diffindo Logo.png"
@@ -39,7 +39,7 @@ export default function Navigation() {
                                 priority
                             />
                         </div>
-                        <span className="text-2xl font-bold tracking-tight font-poppins">Diffindo.</span>
+                        <span className="text-2xl font-bold tracking-tight font-poppins translate-y-1">Diffindo.</span>
                     </Link>
 
                     {/* Desktop Navigation */}
