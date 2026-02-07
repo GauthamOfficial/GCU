@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import Image from 'next/image'
 
 export default function Navigation() {
     const [isOpen, setIsOpen] = useState(false)
@@ -28,8 +29,17 @@ export default function Navigation() {
             <div className="container-editorial">
                 <div className="flex items-center justify-between h-20">
                     {/* Logo */}
-                    <Link href="/" className="text-2xl font-bold tracking-tight hover:opacity-70">
-                        Diffindo
+                    <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
+                        <div className="relative w-10 h-10">
+                            <Image
+                                src="/Diffindo Logo.png"
+                                alt="Diffindo Logo"
+                                fill
+                                className="object-contain"
+                                priority
+                            />
+                        </div>
+                        <span className="text-2xl font-bold tracking-tight font-poppins">Diffindo.</span>
                     </Link>
 
                     {/* Desktop Navigation */}
