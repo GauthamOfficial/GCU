@@ -81,52 +81,52 @@ export default function Navigation() {
                 </div>
             </nav>
 
-            {/* Mobile Menu Overlay */}
-            {isOpen && (
-                <div className="fixed inset-0 z-[60] md:hidden">
-                    {/* Backdrop */}
-                    <div
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300 ease-out"
-                        onClick={() => setIsOpen(false)}
-                        aria-hidden="true"
-                    />
+            {/* Mobile Menu Overlay - Always rendered for transitions */}
+            <div className={`fixed inset-0 z-[60] md:hidden transition-all duration-300 ${isOpen ? 'visible pointer-events-auto' : 'invisible pointer-events-none delay-300'}`}>
+                {/* Backdrop */}
+                <div
+                    className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-out ${isOpen ? 'opacity-100' : 'opacity-0'}`}
+                    onClick={() => setIsOpen(false)}
+                    aria-hidden="true"
+                />
 
-                    {/* Menu Panel */}
-                    <div className="fixed inset-y-0 left-0 w-[80%] max-w-sm shadow-2xl flex flex-col border-r border-border animate-in slide-in-from-left duration-300 ease-out">
-                        {/* Header (Logo) */}
-                        <div className="p-6 bg-white dark:bg-neutral-900 border-b border-black/10 dark:border-white/10">
-                            <div className="flex items-end gap-2">
-                                <div className="relative w-8 h-8">
-                                    <Image
-                                        src="/Diffindo Logo.png"
-                                        alt="Diffindo Logo"
-                                        fill
-                                        className="object-contain"
-                                    />
-                                </div>
-                                <span className="text-xl font-bold tracking-tight font-poppins translate-y-0.5 text-black dark:text-white">Diffindo.</span>
+                {/* Menu Panel */}
+                <div
+                    className={`fixed inset-y-0 left-0 w-[80%] max-w-sm shadow-2xl flex flex-col border-r border-border transition-transform duration-300 ease-out bg-white dark:bg-black ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+                >
+                    {/* Header (Logo) */}
+                    <div className="p-6 bg-white dark:bg-neutral-900 border-b border-black/10 dark:border-white/10">
+                        <div className="flex items-end gap-2">
+                            <div className="relative w-8 h-8">
+                                <Image
+                                    src="/Diffindo Logo.png"
+                                    alt="Diffindo Logo"
+                                    fill
+                                    className="object-contain"
+                                />
                             </div>
+                            <span className="text-xl font-bold tracking-tight font-poppins translate-y-0.5 text-black dark:text-white">Diffindo.</span>
                         </div>
+                    </div>
 
-                        {/* Body (Links) */}
-                        <div className="flex-1 p-6 bg-zinc-50 dark:bg-black overflow-y-auto">
-                            <div className="flex flex-col gap-6">
-                                {navLinks.map((link) => (
-                                    <Link
-                                        key={link.href}
-                                        href={link.href}
-                                        onClick={() => setIsOpen(false)}
-                                        className={`text-lg uppercase tracking-wider hover:opacity-70 transition-opacity text-black dark:text-white ${isActive(link.href) ? 'font-bold' : ''
-                                            }`}
-                                    >
-                                        {link.label}
-                                    </Link>
-                                ))}
-                            </div>
+                    {/* Body (Links) */}
+                    <div className="flex-1 p-6 bg-zinc-50 dark:bg-black overflow-y-auto">
+                        <div className="flex flex-col gap-6">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    onClick={() => setIsOpen(false)}
+                                    className={`text-lg uppercase tracking-wider hover:opacity-70 transition-opacity text-black dark:text-white ${isActive(link.href) ? 'font-bold' : ''
+                                        }`}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
         </>
     )
 }
