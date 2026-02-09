@@ -213,9 +213,10 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {featuredWorks.length > 0 ? (
               featuredWorks.map((item, index) => (
-                <div
+                <Link
                   key={item.id}
-                  className="group cursor-pointer scroll-animate"
+                  href={`/portfolio?id=${item.id}`}
+                  className="group cursor-pointer scroll-animate block"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="aspect-video bg-grey-200 mb-3 overflow-hidden rounded-md border border-grey-200 hover:border-grey-300 transition-colors">
@@ -235,7 +236,7 @@ export default function Home() {
                       <p className="text-sm uppercase tracking-wider text-muted-foreground">{item.category}</p>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))
             ) : (
               <div className="col-span-3 text-center py-12 text-muted-foreground">

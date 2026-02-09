@@ -12,16 +12,39 @@ import { Button } from '@/components/ui/button'
 
 const categories = ['All', 'Birthday', 'Pre-shoot', 'Traditional', 'Event', 'Music Video', 'Travel Highlights', 'Wedding Highlights', 'Promotion Videos'] as const
 
+import { Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+
 export default function PortfolioPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <PortfolioContent />
+        </Suspense>
+    )
+}
+
+function PortfolioContent() {
     const [selectedCategory, setSelectedCategory] = useState<string>('All')
     const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([])
     const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null)
     const [loading, setLoading] = useState(true)
     const observerRef = useRef<IntersectionObserver | null>(null)
+    const searchParams = useSearchParams()
+    const router = useRouter()
+    const initialId = searchParams.get('id')
 
     useEffect(() => {
         fetchPortfolioItems()
     }, [])
+
+    useEffect(() => {
+        if (portfolioItems.length > 0 && initialId) {
+            const item = portfolioItems.find(p => p.id === initialId)
+            if (item) {
+                setSelectedItem(item)
+            }
+        }
+    }, [portfolioItems, initialId])
 
     useEffect(() => {
         // Create Intersection Observer for scroll animations
@@ -63,6 +86,13 @@ export default function PortfolioPage() {
             setPortfolioItems(data || [])
         }
         setLoading(false)
+    }
+
+    const handleCloseModal = () => {
+        setSelectedItem(null)
+        // Clean up URL parameter without refreshing
+        const newUrl = window.location.pathname
+        window.history.replaceState({}, '', newUrl)
     }
 
     const filteredItems = selectedCategory === 'All'
@@ -131,7 +161,7 @@ export default function PortfolioPage() {
             </div>
 
             {/* Video Modal */}
-            <Dialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
+            <Dialog open={!!selectedItem} onOpenChange={(open) => !open && handleCloseModal()}>
                 <DialogContent className="max-w-4xl">
                     <DialogHeader>
                         <DialogTitle className="text-2xl">{selectedItem?.title}</DialogTitle>
