@@ -125,6 +125,17 @@ export default function Navigation() {
                             ))}
                         </div>
                     </div>
+
+                    {/* Footer (Book Button) */}
+                    <div className="p-6 bg-white dark:bg-neutral-900">
+                        <Link
+                            href="/book"
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center justify-center w-full py-2 text-xs font-bold tracking-widest text-white uppercase bg-black dark:bg-white dark:text-black hover:opacity-80 transition-opacity"
+                        >
+                            Book Now
+                        </Link>
+                    </div>
                 </div>
             </div>
         </>
