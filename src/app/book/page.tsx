@@ -209,7 +209,7 @@ export default function BookPage() {
                                         required
                                         value={formData.location}
                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                        placeholder="e.g., Colombo, Kandy, Galle"
+                                        placeholder="Colombo"
                                     />
                                 </div>
 
@@ -223,7 +223,7 @@ export default function BookPage() {
                                         rows={5}
                                         value={formData.notes || ''}
                                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                        placeholder="Tell us about your vision, preferred vibe, outfit ideas, reference videos, or any special requests..."
+                                        placeholder="Tell us about your vision"
                                     />
                                 </div>
 
