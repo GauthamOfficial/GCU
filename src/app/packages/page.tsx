@@ -99,14 +99,13 @@ export default function PackagesPage() {
                                             LKR {pkg.starting_price.toLocaleString()}
                                         </p>
                                     </div>
-                                    <div className="space-y-2.5">
+                                    <ul className="space-y-2.5 list-disc pl-5">
                                         {pkg.deliverables.map((deliverable, idx) => (
-                                            <div key={idx} className="flex items-start gap-2.5">
-                                                <span className="text-black mt-1 flex-shrink-0">•</span>
-                                                <span className="text-sm leading-relaxed text-black">{deliverable}</span>
-                                            </div>
+                                            <li key={idx} className="text-sm leading-relaxed text-black">
+                                                {deliverable}
+                                            </li>
                                         ))}
-                                    </div>
+                                    </ul>
                                 </CardContent>
                                 <CardFooter className="bg-white">
                                     <Button asChild className="w-full" variant={pkg.is_popular ? 'default' : 'outline'}>
