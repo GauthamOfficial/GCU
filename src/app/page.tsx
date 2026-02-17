@@ -107,65 +107,46 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center overflow-hidden bg-black text-white">
-        {/* Cloudinary Background Video */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className="absolute pointer-events-none opacity-40 hero-video"
-        >
-          <source src="https://res.cloudinary.com/dk8aibvnn/video/upload/v1770283350/Sigiriya_ncyree.mp4" type="video/mp4" />
-        </video>
-        <style jsx>{`
-          .hero-video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100vw;
-            height: 177.77vw;
-            min-width: 100vw;
-            min-height: 100vh;
-            object-fit: cover;
-          }
-          @media (min-width: 768px) {
-            .hero-video {
-              width: 100vw;
-              height: 100vh;
-              min-width: 100%;
-              min-height: 100%;
-              object-fit: cover;
-            }
-          }
-        `}</style>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black text-white">
+        {/* White Texture Background */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 1px 1px, rgba(255,255,255,0.4) 1px, transparent 0),
+              radial-gradient(circle at 3px 3px, rgba(255,255,255,0.3) 1px, transparent 0),
+              linear-gradient(0deg, rgba(255,255,255,0.15) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)
+            `,
+            backgroundSize: '20px 20px, 40px 40px, 30px 30px, 30px 30px',
+            backgroundPosition: '0 0, 10px 10px, 0 0, 0 0'
+          }}
+        />
+        
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
 
-        {/* Dark Overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/40" />
-
-        <div className="max-w-7xl relative z-10 px-8 md:px-16 lg:px-24">
-          <h1 className="text-balance mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-            Cinematic Storytelling
-            <br />
-            For Your Most
-            <br />
-            Memorable Moments
+        {/* Glass Morphism Content Container */}
+        <div className="relative z-10 w-[calc(100%-2rem)] max-w-6xl mx-auto text-center backdrop-blur-sm sm:backdrop-blur-md bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl py-8 px-6 sm:py-12 sm:px-8 md:px-16 md:py-16 lg:px-24 shadow-2xl glass-morphism-animate">
+          <h1 className="mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
+            Creative Studio For 
+            <br />Visual & Digital Experiences
           </h1>
-          <p className="text-xl md:text-2xl text-grey-300 mb-12 max-w-2xl opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-            Cinematic Videos | Pre-shoots | Traditional Events | Music Videos | Travel Highlights | Wedding Highlights | Promotion Videos
+          <p className="text-base md:text-lg lg:text-xl text-grey-300 mb-12 mx-auto opacity-0 animate-fade-in-up uppercase tracking-wider px-4" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
+            Cinematic Video Production | Professional Video Editing
+            <br />
+            Web Development | Graphic Design
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
             <Button asChild size="lg" className="text-base px-8 py-6 h-auto hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-all duration-300">
               <Link href="/book">
-                Book a Shoot
+                Start a Project
                 <ArrowRight className="ml-2" size={20} />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 h-auto bg-transparent border-white text-white hover:bg-white hover:text-black">
               <Link href="/portfolio">
-                View Portfolio
+                View Work
               </Link>
             </Button>
           </div>
@@ -175,23 +156,46 @@ export default function Home() {
       {/* Services Overview */}
       <section className="editorial-spacing">
         <div className="container-editorial">
-          <h2 className="mb-16 text-center scroll-animate">What We Create</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <h2 className="mb-20 text-center scroll-animate">Our Services</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             {services.map((service, index) => (
               <div
                 key={service.title}
-                className="group scroll-animate"
+                className="group scroll-animate bg-white border border-grey-200 rounded-lg overflow-hidden hover:border-black hover:shadow-lg transition-all duration-500 ease-out"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="aspect-video bg-grey-100 mb-4 overflow-hidden rounded-md">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                {/* Thumbnail placeholder */}
+                <div className="aspect-video w-full bg-grey-100 border-b border-grey-200 overflow-hidden">
+                  {service.thumbnail ? (
+                    <img
+                      src={service.thumbnail}
+                      alt={service.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-grey-400 text-sm uppercase tracking-wider">
+                      Thumbnail
+                    </div>
+                  )}
                 </div>
-                <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
-                <p className="text-muted-foreground">{service.description}</p>
+                <div className="p-8 lg:p-10">
+                  <h3 className="text-2xl lg:text-3xl font-bold mb-4 text-black group-hover:text-black transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-base lg:text-lg text-grey-600 mb-6 leading-relaxed min-h-[3rem]">
+                    {service.description}
+                  </p>
+                  <div className="pt-6 border-t border-grey-100">
+                    <ul className="flex flex-wrap gap-x-3 gap-y-2">
+                      {service.items.map((item, idx) => (
+                        <li key={idx} className="text-xs lg:text-sm text-black uppercase tracking-widest font-medium">
+                          {item}
+                          {idx < service.items.length - 1 && <span className="mx-3 text-grey-400">•</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -248,16 +252,31 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="editorial-spacing bg-black text-white">
-        <div className="container-editorial text-center">
-          <h2 className="mb-6 scroll-animate">Ready to Tell Your Story?</h2>
+      <section className="relative editorial-spacing bg-black text-white overflow-hidden">
+        {/* White Texture Background */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 1px 1px, rgba(255,255,255,0.4) 1px, transparent 0),
+              radial-gradient(circle at 3px 3px, rgba(255,255,255,0.3) 1px, transparent 0),
+              linear-gradient(0deg, rgba(255,255,255,0.15) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)
+            `,
+            backgroundSize: '20px 20px, 40px 40px, 30px 30px, 30px 30px',
+            backgroundPosition: '0 0, 10px 10px, 0 0, 0 0'
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
+        <div className="container-editorial text-center relative z-10">
+          <h2 className="mb-6 scroll-animate">Ready to Start Your Project?</h2>
           <p className="text-xl text-grey-300 mb-10 max-w-2xl mx-auto scroll-animate" style={{ animationDelay: '0.2s' }}>
-            Let's create something cinematic together. Book your shoot and bring your vision to life.
+            Let's bring your vision to life. From video production to web development and design, we're here to help.
           </p>
           <div className="scroll-animate" style={{ animationDelay: '0.4s' }}>
             <Button asChild size="lg" variant="outline" className="text-base px-8 py-6 h-auto bg-transparent border-white text-white hover:bg-white hover:text-black">
               <Link href="/book">
-                Get Started
+                Start a Project
                 <ArrowRight className="ml-2" size={20} />
               </Link>
             </Button>
@@ -369,43 +388,27 @@ export default function Home() {
 
 const services = [
   {
-    title: "Pre-shoot",
-    description: "Romantic cinematic stories that showcase your love and connection in stunning locations before the big day.",
-    image: "/Categories/Pre shoot.jpg",
+    title: "Cinematic Video Production",
+    description: "Professional video production services that bring your stories to life with cinematic quality and creative direction.",
+    items: ["Shoots", "Events", "Music videos", "Weddings", "Commercials"],
+    thumbnail: null as string | null,
   },
   {
-    title: "Music Video",
-    description: "Creative visual storytelling that brings your music to life with professional direction, editing, and color grading.",
-    image: "/Categories/Music Video.jpg",
+    title: "Professional Video Editing",
+    description: "Expert editing services that transform raw footage into polished, engaging content ready for any platform.",
+    items: ["Reels", "YouTube", "Promotions", "Highlight edits"],
+    thumbnail: null as string | null,
   },
   {
-    title: "Birthday",
-    description: "Celebrate life's milestones with vibrant, joyful videos that capture the energy and emotion of your special day.",
-    image: "/Categories/Birthday.jpg",
+    title: "Web Development",
+    description: "Modern, responsive websites built with clean code and intuitive design to elevate your digital presence.",
+    items: ["Business websites", "Portfolio sites", "Landing pages", "Modern responsive builds"],
+    thumbnail: null as string | null,
   },
   {
-    title: "Traditional",
-    description: "Honor heritage and culture with elegant films that respectfully preserve your family's most sacred traditions.",
-    image: "/Categories/Traditional.jpg",
-  },
-  {
-    title: "Wedding Highlights",
-    description: "Relive the magic of your wedding day with a cinematic highlight reel capturing the vows, emotions, and celebration.",
-    image: "/Categories/Wedding Highlights.jpg",
-  },
-  {
-    title: "Travel Highlights",
-    description: "Capture the essence of your journey with breathtaking travel films that document the landscapes, culture, and adventure.",
-    image: "/Categories/Travel Highlights.jpg",
-  },
-  {
-    title: "Promotion Videos",
-    description: "High-impact commercial videos designed to elevate your brand, showcase products, and engage your audience.",
-    image: "/Categories/Promotion Video.jpg",
-  },
-  {
-    title: "Events",
-    description: "From intimate corporate gatherings to grand galas, we capture every significant moment with professional coverage.",
-    image: "/Categories/events.jpg",
+    title: "Graphic Design",
+    description: "Visual design solutions that communicate your brand effectively across print and digital mediums.",
+    items: ["Flyers", "Posters", "Social media creatives", "Branding materials"],
+    thumbnail: null as string | null,
   },
 ]

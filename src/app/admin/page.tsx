@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Booking, Package, PortfolioItem, Testimonial } from '@/lib/types'
+import { Booking, PortfolioItem, Testimonial } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -37,11 +37,9 @@ export default function AdminPage() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [bookings, setBookings] = useState<Booking[]>([])
-    const [packages, setPackages] = useState<Package[]>([])
     const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([])
     const [testimonials, setTestimonials] = useState<Testimonial[]>([])
-    const [activeTab, setActiveTab] = useState<'bookings' | 'packages' | 'portfolio' | 'testimonials'>('bookings')
-    const [editingPackage, setEditingPackage] = useState<string | null>(null)
+    const [activeTab, setActiveTab] = useState<'bookings' | 'portfolio' | 'testimonials'>('bookings')
     const [editingPortfolio, setEditingPortfolio] = useState<string | null>(null)
     const [editingTestimonial, setEditingTestimonial] = useState<string | null>(null)
 
@@ -66,12 +64,6 @@ export default function AdminPage() {
             .select('*')
             .order('created_at', { ascending: false })
         if (bookingsData) setBookings(bookingsData)
-
-        const { data: packagesData } = await supabase
-            .from('packages')
-            .select('*')
-            .order('display_order', { ascending: true })
-        if (packagesData) setPackages(packagesData)
 
         const { data: portfolioData } = await supabase
             .from('portfolio_items')
@@ -115,7 +107,6 @@ export default function AdminPage() {
         localStorage.removeItem('admin_authenticated')
         setIsAuthenticated(false)
         setBookings([])
-        setPackages([])
         setPortfolioItems([])
         setTestimonials([])
         setUsername('')
@@ -131,66 +122,6 @@ export default function AdminPage() {
 
         if (!error) {
             setBookings(bookings.map(b => b.id === id ? { ...b, status: status as any } : b))
-        }
-    }
-
-    async function updatePackage(pkg: Package) {
-        try {
-            const response = await fetch('/api/admin/packages', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
-                },
-                body: JSON.stringify({
-                    id: pkg.id,
-                    name: pkg.name,
-                    description: pkg.description,
-                    starting_price: pkg.starting_price,
-                    is_popular: pkg.is_popular,
-                    deliverables: pkg.deliverables,
-                    display_order: pkg.display_order
-                })
-            })
-
-            if (!response.ok) {
-                const error = await response.json()
-                console.error('Failed to update package:', error)
-                alert(`Failed to update package: ${error.error || 'Unknown error'}`)
-                return
-            }
-
-            const updatedPackage = await response.json()
-            setPackages(packages.map(p => p.id === pkg.id ? updatedPackage : p))
-            setEditingPackage(null)
-        } catch (error) {
-            console.error('Error updating package:', error)
-            alert('Failed to update package. Please try again.')
-        }
-    }
-
-    async function deletePackage(id: string) {
-        if (!confirm('Are you sure you want to delete this package?')) return
-
-        try {
-            const response = await fetch(`/api/admin/packages?id=${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'x-admin-password': process.env.NEXT_PUBLIC_ADMIN_PASSWORD || ''
-                }
-            })
-
-            if (!response.ok) {
-                const error = await response.json()
-                console.error('Failed to delete package:', error)
-                alert(`Failed to delete package: ${error.error || 'Unknown error'}`)
-                return
-            }
-
-            setPackages(packages.filter(p => p.id !== id))
-        } catch (error) {
-            console.error('Error deleting package:', error)
-            alert('Failed to delete package. Please try again.')
         }
     }
 
@@ -525,7 +456,7 @@ export default function AdminPage() {
                 <div className="flex items-center justify-between mb-8 pb-6 border-b">
                     <div>
                         <h1 className="text-3xl font-bold mb-2">Diffindo Admin</h1>
-                        <p className="text-muted-foreground">Manage bookings, packages, and portfolio</p>
+                        <p className="text-muted-foreground">Manage bookings, portfolio, and testimonials</p>
                     </div>
                     <Button onClick={handleSignOut} variant="outline">
                         <LogOut className="mr-2" size={16} />
@@ -540,12 +471,6 @@ export default function AdminPage() {
                         onClick={() => setActiveTab('bookings')}
                     >
                         Bookings ({bookings.length})
-                    </Button>
-                    <Button
-                        variant={activeTab === 'packages' ? 'default' : 'outline'}
-                        onClick={() => setActiveTab('packages')}
-                    >
-                        Packages ({packages.length})
                     </Button>
                     <Button
                         variant={activeTab === 'portfolio' ? 'default' : 'outline'}
@@ -565,8 +490,8 @@ export default function AdminPage() {
                 {activeTab === 'bookings' && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>Booking Requests</CardTitle>
-                            <CardDescription>Manage and track all booking requests</CardDescription>
+                            <CardTitle>Project Requests</CardTitle>
+                            <CardDescription>Manage and track all project inquiries and booking requests</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {bookings.length === 0 ? (
@@ -629,142 +554,12 @@ export default function AdminPage() {
                     </Card>
                 )}
 
-                {/* Packages Management */}
-                {activeTab === 'packages' && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Packages</CardTitle>
-                            <CardDescription>Edit pricing and package details</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {packages.length === 0 ? (
-                                <p className="text-center text-muted-foreground py-8">No packages yet</p>
-                            ) : (
-                                <div className="space-y-4">
-                                    {packages.map((pkg) => (
-                                        <div key={pkg.id} className="border rounded-lg p-4">
-                                            {editingPackage === pkg.id ? (
-                                                <div className="space-y-4">
-                                                    <Input
-                                                        value={pkg.name}
-                                                        onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, name: e.target.value } : p))}
-                                                        placeholder="Package name"
-                                                    />
-                                                    <Textarea
-                                                        value={pkg.description}
-                                                        onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, description: e.target.value } : p))}
-                                                        placeholder="Description"
-                                                    />
-                                                    <Input
-                                                        type="number"
-                                                        value={pkg.starting_price}
-                                                        onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, starting_price: parseInt(e.target.value) } : p))}
-                                                        placeholder="Price"
-                                                    />
-                                                    <Input
-                                                        type="number"
-                                                        value={pkg.display_order}
-                                                        onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, display_order: parseInt(e.target.value) } : p))}
-                                                        placeholder="Display Order"
-                                                    />
-
-                                                    {/* Deliverables Editor */}
-                                                    <div className="space-y-2">
-                                                        <label className="text-sm font-semibold">Deliverables</label>
-                                                        {pkg.deliverables.map((deliverable, idx) => (
-                                                            <div key={idx} className="flex gap-2">
-                                                                <Input
-                                                                    value={deliverable}
-                                                                    onChange={(e) => {
-                                                                        const newDeliverables = [...pkg.deliverables]
-                                                                        newDeliverables[idx] = e.target.value
-                                                                        setPackages(packages.map(p => p.id === pkg.id ? { ...p, deliverables: newDeliverables } : p))
-                                                                    }}
-                                                                    placeholder={`Deliverable ${idx + 1}`}
-                                                                />
-                                                                <Button
-                                                                    onClick={() => {
-                                                                        const newDeliverables = pkg.deliverables.filter((_, i) => i !== idx)
-                                                                        setPackages(packages.map(p => p.id === pkg.id ? { ...p, deliverables: newDeliverables } : p))
-                                                                    }}
-                                                                    variant="outline"
-                                                                    size="sm"
-                                                                    type="button"
-                                                                >
-                                                                    <X size={16} />
-                                                                </Button>
-                                                            </div>
-                                                        ))}
-                                                        <Button
-                                                            onClick={() => {
-                                                                const newDeliverables = [...pkg.deliverables, '']
-                                                                setPackages(packages.map(p => p.id === pkg.id ? { ...p, deliverables: newDeliverables } : p))
-                                                            }}
-                                                            variant="outline"
-                                                            size="sm"
-                                                            type="button"
-                                                        >
-                                                            <Plus className="mr-2" size={16} />
-                                                            Add Deliverable
-                                                        </Button>
-                                                    </div>
-
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={pkg.is_popular}
-                                                            onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, is_popular: e.target.checked } : p))}
-                                                            className="w-4 h-4"
-                                                        />
-                                                        <label>Mark as Popular</label>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        <Button onClick={() => updatePackage(pkg)} size="sm">
-                                                            <Save className="mr-2" size={16} />
-                                                            Save
-                                                        </Button>
-                                                        <Button onClick={() => setEditingPackage(null)} variant="outline" size="sm">
-                                                            <X className="mr-2" size={16} />
-                                                            Cancel
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-start justify-between">
-                                                    <div>
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <h3 className="text-xl font-bold">{pkg.name}</h3>
-                                                            {pkg.is_popular && (
-                                                                <Badge>Most Popular</Badge>
-                                                            )}
-                                                        </div>
-                                                        <p className="text-muted-foreground mb-2">{pkg.description}</p>
-                                                        <p className="text-lg font-semibold">LKR {pkg.starting_price.toLocaleString()}</p>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        <Button onClick={() => setEditingPackage(pkg.id)} variant="outline" size="sm">
-                                                            <Edit size={16} />
-                                                        </Button>
-                                                        <Button onClick={() => deletePackage(pkg.id)} variant="outline" size="sm" className="border-destructive text-destructive hover:bg-destructive/10">
-                                                            <Trash2 size={16} />
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                )}
-
                 {/* Portfolio Management */}
                 {activeTab === 'portfolio' && (
                     <Card>
                         <CardHeader>
                             <CardTitle>Portfolio Items</CardTitle>
-                            <CardDescription>Edit portfolio videos and details</CardDescription>
+                            <CardDescription>Manage portfolio items across video production, web development, and graphic design</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="mb-4">
@@ -825,6 +620,7 @@ export default function AdminPage() {
                                                                     <SelectValue />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
+                                                                    {/* Video Project Categories */}
                                                                     <SelectItem value="Birthday">Birthday</SelectItem>
                                                                     <SelectItem value="Pre-shoot">Pre-shoot</SelectItem>
                                                                     <SelectItem value="Traditional">Traditional</SelectItem>
@@ -833,6 +629,12 @@ export default function AdminPage() {
                                                                     <SelectItem value="Travel Highlights">Travel Highlights</SelectItem>
                                                                     <SelectItem value="Wedding Highlights">Wedding Highlights</SelectItem>
                                                                     <SelectItem value="Promotion Videos">Promotion Videos</SelectItem>
+                                                                    {/* Web Project Categories */}
+                                                                    <SelectItem value="Web Project">Web Project</SelectItem>
+                                                                    <SelectItem value="Web Development">Web Development</SelectItem>
+                                                                    {/* Design Project Categories */}
+                                                                    <SelectItem value="Design">Design</SelectItem>
+                                                                    <SelectItem value="Graphic Design">Graphic Design</SelectItem>
                                                                 </SelectContent>
                                                             </Select>
 

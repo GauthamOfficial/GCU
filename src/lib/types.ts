@@ -15,8 +15,8 @@ export interface Package {
 export interface PortfolioItem {
     id: string
     title: string
-    category: 'Birthday' | 'Pre-shoot' | 'Traditional' | 'Event' | 'Music Video' | 'Travel Highlights' | 'Wedding Highlights' | 'Promotion Videos'
-    video_url: string // Google Drive shareable link
+    category: 'Birthday' | 'Pre-shoot' | 'Traditional' | 'Event' | 'Music Video' | 'Travel Highlights' | 'Wedding Highlights' | 'Promotion Videos' | 'Web Project' | 'Web Development' | 'Design' | 'Graphic Design'
+    video_url: string // Google Drive shareable link or web project URL
     thumbnail_url: string | null // Google Drive shareable link
     description: string | null
     display_order: number

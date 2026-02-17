@@ -190,3 +190,148 @@
   transition: opacity 1s ease-out, transform 1s ease-out;
   transition-delay: var(--animation-delay, 0s);
 }
+
+/* Glass Morphism Animation */
+@keyframes glass-morphism {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    backdrop-filter: blur(0px);
+  }
+  50% {
+    backdrop-filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    backdrop-filter: blur(12px);
+  }
+}
+
+@keyframes glass-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.glass-morphism-animate {
+  animation: glass-morphism 1.5s ease-out forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-morphism-animate::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: glass-shimmer 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Custom Scrollbar Styling - Simple & Clean */
+@layer base {
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-grey-300);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-grey-500);
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-grey-300) transparent;
+  }
+
+  /* Dark mode scrollbar */
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--color-grey-700);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-grey-500);
+  }
+
+  .dark * {
+    scrollbar-color: var(--color-grey-700) transparent;
+  }
+
+  /* Select Dropdown Scrollbar - Always Visible */
+  [data-slot="select-content"] {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-grey-400) var(--color-grey-100);
+  }
+
+  [data-slot="select-content"]::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  [data-slot="select-content"]::-webkit-scrollbar-track {
+    background: var(--color-grey-100);
+    border-radius: 4px;
+    margin: 4px;
+  }
+
+  [data-slot="select-content"]::-webkit-scrollbar-thumb {
+    background: var(--color-grey-400);
+    border-radius: 4px;
+    border: 1px solid var(--color-grey-200);
+  }
+
+  [data-slot="select-content"]::-webkit-scrollbar-thumb:hover {
+    background: var(--color-grey-600);
+  }
+
+  /* Dark mode select scrollbar */
+  .dark [data-slot="select-content"] {
+    scrollbar-color: var(--color-grey-600) var(--color-grey-800);
+  }
+
+  .dark [data-slot="select-content"]::-webkit-scrollbar-track {
+    background: var(--color-grey-800);
+    border-color: var(--color-grey-700);
+  }
+
+  .dark [data-slot="select-content"]::-webkit-scrollbar-thumb {
+    background: var(--color-grey-600);
+    border-color: var(--color-grey-700);
+  }
+
+  .dark [data-slot="select-content"]::-webkit-scrollbar-thumb:hover {
+    background: var(--color-grey-500);
+  }
+
+  /* Hide scrollbar but allow scrolling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

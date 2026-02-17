@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Check } from 'lucide-react'
 
 const occasionTypes = [
+    // Video Production
     'Birthday',
     'Pre-shoot',
     'Traditional',
@@ -19,6 +20,22 @@ const occasionTypes = [
     'Travel Highlights',
     'Wedding Highlights',
     'Promotion Videos',
+    // Video Editing
+    'Video Editing - Reels',
+    'Video Editing - YouTube',
+    'Video Editing - Promotions',
+    'Video Editing - Highlights',
+    // Web Development
+    'Web Development - Business Website',
+    'Web Development - Portfolio Site',
+    'Web Development - Landing Page',
+    'Web Development - Custom Project',
+    // Graphic Design
+    'Graphic Design - Flyers',
+    'Graphic Design - Posters',
+    'Graphic Design - Social Media',
+    'Graphic Design - Branding',
+    // Other
     'Other',
 ]
 
@@ -129,9 +146,9 @@ export default function BookPage() {
                 <div className="max-w-2xl mx-auto">
                     {/* Header */}
                     <div className="mb-12">
-                        <h1 className="mb-6 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>Book a Shoot</h1>
+                        <h1 className="mb-6 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>Start a Project</h1>
                         <p className="text-xl text-muted-foreground opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-                            Tell us about your vision and we'll bring it to life. Fill out the form below and we'll get back to you within 24 hours.
+                            Tell us about your project and we'll bring it to life. Fill out the form below and we'll get back to you within 24 hours.
                         </p>
                     </div>
 
@@ -178,7 +195,7 @@ export default function BookPage() {
                                 {/* Occasion Type */}
                                 <div className="space-y-2">
                                     <label htmlFor="occasion" className="text-sm font-semibold">
-                                        Occasion Type
+                                        Project Type / Service
                                     </label>
                                     <Select
                                         required
@@ -186,9 +203,9 @@ export default function BookPage() {
                                         onValueChange={(value) => setFormData({ ...formData, occasion_type: value })}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select occasion type" />
+                                            <SelectValue placeholder="Select project type or service" />
                                         </SelectTrigger>
-                                        <SelectContent>
+                                        <SelectContent className="max-h-[300px] overflow-y-auto">
                                             {occasionTypes.map((type) => (
                                                 <SelectItem key={type} value={type}>
                                                     {type}

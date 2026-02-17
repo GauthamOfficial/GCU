@@ -19,12 +19,12 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Diffindo",
-  description: "Premium cinematic storytelling for birthdays, pre-shoots, traditional shoots, and personal events in Sri Lanka. Book your shoot today.",
-  keywords: ["cinematic reels", "short films", "birthday videos", "pre-wedding shoots", "Sri Lanka videography", "Diffindo"],
+  description: "A full-service creative studio offering cinematic video production, video editing, web development, and graphic design.",
+  keywords: ["video production", "web development", "graphic design", "video editing", "creative studio", "Diffindo"],
   authors: [{ name: "Diffindo" }],
   openGraph: {
     title: "Diffindo",
-    description: "Premium cinematic storytelling for your most memorable moments in Sri Lanka.",
+    description: "Creative studio for visual & digital experiences. We craft visuals, brands, and digital presence.",
     type: "website",
   },
 };

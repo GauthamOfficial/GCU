@@ -24,9 +24,10 @@ export default function Navigation() {
 
     const navLinks = [
         { href: '/', label: 'Home' },
+        { href: '/services', label: 'Services' },
         { href: '/portfolio', label: 'Portfolio' },
-        { href: '/packages', label: 'Packages' },
-        { href: '/book', label: 'Book a Shoot' },
+        { href: '/about', label: 'About' },
+        { href: '/book', label: 'Contact' },
     ]
 
     const isActive = (href: string) => {
@@ -126,14 +127,14 @@ export default function Navigation() {
                         </div>
                     </div>
 
-                    {/* Footer (Book Button) */}
+                    {/* Footer (Contact Button) */}
                     <div className="p-6 bg-white dark:bg-neutral-900">
                         <Link
                             href="/book"
                             onClick={() => setIsOpen(false)}
                             className="flex items-center justify-center w-full py-2 text-xs font-bold tracking-widest text-white uppercase bg-black dark:bg-white dark:text-black hover:opacity-80 transition-opacity"
                         >
-                            Book Now
+                            Get in Touch
                         </Link>
                     </div>
                 </div>

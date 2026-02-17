@@ -4,13 +4,14 @@ import { convertMediaUrl } from '@/lib/utils'
 
 
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { PortfolioItem } from '@/lib/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
-const categories = ['All', 'Birthday', 'Pre-shoot', 'Traditional', 'Event', 'Music Video', 'Travel Highlights', 'Wedding Highlights', 'Promotion Videos'] as const
+const mainCategories = ['All', 'Video Projects', 'Web Projects', 'Design Projects'] as const
+const videoSubCategories = ['Birthday', 'Pre-shoot', 'Traditional', 'Event', 'Music Video', 'Travel Highlights', 'Wedding Highlights', 'Promotion Videos'] as const
 
 import { Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -25,6 +26,7 @@ export default function PortfolioPage() {
 
 function PortfolioContent() {
     const [selectedCategory, setSelectedCategory] = useState<string>('All')
+    const [selectedMainCategory, setSelectedMainCategory] = useState<string>('All')
     const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([])
     const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null)
     const [loading, setLoading] = useState(true)
@@ -65,13 +67,14 @@ function PortfolioContent() {
             }
         )
 
+        // Re-observe elements when filtered items change
         const elements = document.querySelectorAll('.scroll-animate')
         elements.forEach((el) => observerRef.current?.observe(el))
 
         return () => {
             observerRef.current?.disconnect()
         }
-    }, [portfolioItems, selectedCategory])
+    }, [portfolioItems, selectedCategory, selectedMainCategory])
 
     async function fetchPortfolioItems() {
         const supabase = createClient()
@@ -95,9 +98,36 @@ function PortfolioContent() {
         window.history.replaceState({}, '', newUrl)
     }
 
-    const filteredItems = selectedCategory === 'All'
-        ? portfolioItems
-        : portfolioItems.filter(item => item.category === selectedCategory)
+    const filteredItems = useMemo(() => {
+        // Always ensure we have portfolio items
+        if (!portfolioItems || portfolioItems.length === 0) {
+            return []
+        }
+
+        if (selectedMainCategory === 'All') {
+            return portfolioItems
+        } else if (selectedMainCategory === 'Video Projects') {
+            if (selectedCategory === 'All') {
+                return portfolioItems.filter(item => videoSubCategories.includes(item.category as any))
+            }
+            return portfolioItems.filter(item => item.category === selectedCategory)
+        } else if (selectedMainCategory === 'Web Projects') {
+            // Filter for web-related categories (will work when these categories are added to the database)
+            return portfolioItems.filter(item => 
+                item.category === 'Web Project' || 
+                item.category === 'Web Development' ||
+                (item.category && item.category.toLowerCase().includes('web'))
+            )
+        } else if (selectedMainCategory === 'Design Projects') {
+            // Filter for design-related categories (will work when these categories are added to the database)
+            return portfolioItems.filter(item => 
+                item.category === 'Design' || 
+                item.category === 'Graphic Design' ||
+                (item.category && item.category.toLowerCase().includes('design'))
+            )
+        }
+        return portfolioItems
+    }, [portfolioItems, selectedMainCategory, selectedCategory])
 
     return (
         <div className="min-h-screen py-24">
@@ -106,22 +136,44 @@ function PortfolioContent() {
                 <div className="mb-16">
                     <h1 className="mb-6 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>Portfolio</h1>
                     <p className="text-xl text-muted-foreground max-w-2xl opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-                        Explore our collection of cinematic videos and short films, crafted with passion and precision.
+                        Explore our work across video production, web development, and graphic design.
                     </p>
                 </div>
 
-                {/* Filter Buttons */}
-                <div className="flex flex-wrap gap-3 mb-12 scroll-animate">
-                    {categories.map((category) => (
+                {/* Main Category Filter Buttons */}
+                <div className="flex flex-wrap gap-3 mb-6 scroll-animate">
+                    {mainCategories.map((category) => (
                         <Button
                             key={category}
-                            onClick={() => setSelectedCategory(category)}
-                            variant={selectedCategory === category ? 'default' : 'outline'}
+                            onClick={() => {
+                                // Reset both states when switching main categories
+                                setSelectedMainCategory(category)
+                                setSelectedCategory('All')
+                            }}
+                            variant={selectedMainCategory === category ? 'default' : 'outline'}
+                            className="text-sm"
                         >
                             {category}
                         </Button>
                     ))}
                 </div>
+
+                {/* Sub-category Filter Buttons (only show for Video Projects) */}
+                {selectedMainCategory === 'Video Projects' && (
+                    <div className="flex flex-wrap gap-2 mb-12 scroll-animate">
+                        {videoSubCategories.map((category) => (
+                            <Button
+                                key={category}
+                                onClick={() => setSelectedCategory(category)}
+                                variant={selectedCategory === category ? 'default' : 'outline'}
+                                size="sm"
+                                className="text-xs"
+                            >
+                                {category}
+                            </Button>
+                        ))}
+                    </div>
+                )}
 
                 {/* Portfolio Grid */}
                 {loading ? (
