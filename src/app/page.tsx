@@ -186,11 +186,10 @@ export default function Home() {
                     {service.description}
                   </p>
                   <div className="pt-6 border-t border-grey-100">
-                    <ul className="flex flex-wrap gap-x-3 gap-y-2">
+                    <ul className="grid grid-cols-2 gap-x-6 gap-y-2 list-disc list-inside text-grey-600 text-sm">
                       {service.items.map((item, idx) => (
-                        <li key={idx} className="text-xs lg:text-sm text-black uppercase tracking-widest font-medium">
+                        <li key={idx} className="capitalize">
                           {item}
-                          {idx < service.items.length - 1 && <span className="mx-3 text-grey-400">•</span>}
                         </li>
                       ))}
                     </ul>
