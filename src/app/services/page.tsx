@@ -100,14 +100,14 @@ export default function ServicesPage() {
                                 )}
                             </div>
                             <div className="p-8 lg:p-10">
-                                <h2 className="text-2xl lg:text-3xl font-bold mb-4 text-black group-hover:text-black transition-colors">
+                                <h2 className="text-xl lg:text-2xl font-bold mb-3 text-black group-hover:text-black transition-colors">
                                     {service.title}
                                 </h2>
-                                <p className="text-base lg:text-lg text-grey-600 mb-6 leading-relaxed min-h-[3rem]">
+                                <p className="text-sm lg:text-base text-grey-600 mb-4 leading-relaxed min-h-[3rem]">
                                     {service.description}
                                 </p>
-                                <div className="pt-6 border-t border-grey-100">
-                                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 list-disc list-inside text-grey-600 text-sm">
+                                <div className="pt-4 border-t border-grey-100">
+                                    <ul className="flex flex-col gap-y-1.5 list-disc list-inside text-grey-600 text-xs lg:text-sm">
                                         {service.items.map((item, idx) => (
                                             <li key={idx} className="capitalize">
                                                 {item}
