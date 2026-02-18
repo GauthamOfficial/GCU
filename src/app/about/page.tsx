@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 
@@ -55,8 +56,15 @@ export default function AboutPage() {
 
                     {/* Right Column - Image Space */}
                     <div className="scroll-animate" style={{ animationDelay: '0.4s' }}>
-                        <div className="w-full aspect-square bg-grey-100 border border-grey-200 rounded-lg">
-                            {/* Image placeholder - replace with actual image */}
+                        <div className="w-full aspect-square bg-grey-100 border border-grey-200 rounded-lg overflow-hidden relative">
+                            <Image
+                                src="/about.jpg?v=2"
+                                alt="About Diffindo"
+                                fill
+                                className="object-cover"
+                                priority
+                                unoptimized
+                            />
                         </div>
                     </div>
                 </div>

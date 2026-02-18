@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 
@@ -10,25 +11,25 @@ const services = [
         title: "Cinematic Video Production",
         description: "Professional video production services that bring your stories to life with cinematic quality and creative direction.",
         items: ["Shoots", "Events", "Music videos", "Weddings", "Commercials"],
-        thumbnail: null as string | null,
+        thumbnail: "/promotion-video.jpg",
     },
     {
         title: "Professional Video Editing",
         description: "Expert editing services that transform raw footage into polished, engaging content ready for any platform.",
         items: ["Reels", "YouTube", "Promotions", "Highlight edits"],
-        thumbnail: null as string | null,
+        thumbnail: "/video-editing.jpg",
     },
     {
         title: "Web Development",
         description: "Modern, responsive websites built with clean code and intuitive design to elevate your digital presence.",
         items: ["Business websites", "Portfolio sites", "Landing pages", "Modern responsive builds"],
-        thumbnail: null as string | null,
+        thumbnail: "/web-development.jpg",
     },
     {
         title: "Graphic Design",
         description: "Visual design solutions that communicate your brand effectively across print and digital mediums.",
         items: ["Flyers", "Posters", "Social media creatives", "Branding materials"],
-        thumbnail: null as string | null,
+        thumbnail: "/graphic-design.jpg",
     },
 ]
 
@@ -84,12 +85,13 @@ export default function ServicesPage() {
                             style={{ animationDelay: `${index * 0.1}s` }}
                         >
                             {/* Thumbnail placeholder */}
-                            <div className="aspect-video w-full bg-grey-100 border-b border-grey-200 overflow-hidden">
+                            <div className="aspect-video w-full bg-grey-100 border-b border-grey-200 overflow-hidden relative">
                                 {service.thumbnail ? (
-                                    <img
+                                    <Image
                                         src={service.thumbnail}
                                         alt={service.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        fill
+                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-grey-400 text-sm uppercase tracking-wider">
