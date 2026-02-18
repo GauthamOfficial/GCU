@@ -42,8 +42,11 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // Validate category
-        const validCategories = ['Birthday', 'Pre-shoot', 'Traditional', 'Event', 'Music Video', 'Travel Highlights', 'Wedding Highlights', 'Promotion Videos']
+        // Validate category (must match PortfolioItem type and Supabase allowed values)
+        const validCategories = [
+            'Birthday', 'Pre-shoot', 'Traditional', 'Event', 'Music Video', 'Travel Highlights', 'Wedding Highlights', 'Promotion Videos',
+            'Web Project', 'Web Development', 'Design', 'Graphic Design',
+        ]
         if (!validCategories.includes(category)) {
             return NextResponse.json({ error: 'Invalid category' }, { status: 400 })
         }
