@@ -105,7 +105,7 @@ export default function ServicesPage() {
                                     {service.description}
                                 </p>
                                 <div className="pt-6 border-t border-grey-100">
-                                    <ul className="grid grid-cols-2 gap-x-6 gap-y-2 list-disc list-inside text-grey-600 text-sm">
+                                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 list-disc list-inside text-grey-600 text-sm">
                                         {service.items.map((item, idx) => (
                                             <li key={idx} className="capitalize">
                                                 {item}

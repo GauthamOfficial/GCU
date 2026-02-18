@@ -155,7 +155,7 @@ export default function Home() {
             </div>
             <span className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight font-poppins translate-y-1 text-white">Diffindo.</span>
           </div>
-          <h1 className="text-2xl md:text-4xl lg:text-5xl mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
           Visual Storytelling & Digital Experiences
           </h1>
           <div className="text-sm md:text-base lg:text-lg text-grey-300 mb-8 mx-auto opacity-0 animate-fade-in-up uppercase tracking-wider px-4 space-y-2 md:space-y-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
@@ -210,13 +210,13 @@ export default function Home() {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
-            <Button asChild size="lg" className="text-base px-8 py-6 h-auto hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] hover:scale-105 hover:brightness-110 active:scale-100 transition-all duration-300 before:hover:from-white/50 before:hover:via-white/20">
+            <Button asChild size="lg" className="text-base px-8 py-6 h-auto">
               <Link href="/book">
                 Start a Project
                 <ArrowRight className="ml-2" size={20} />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 h-auto bg-transparent border-white text-white hover:bg-white hover:text-black hover:scale-105 active:scale-100 transition-all duration-300 before:hover:from-white/60 before:hover:via-white/25">
+            <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 h-auto">
               <Link href="/portfolio">
                 View Work
               </Link>
@@ -258,7 +258,7 @@ export default function Home() {
                     {service.description}
                   </p>
                   <div className="pt-6 border-t border-grey-100">
-                    <ul className="grid grid-cols-2 gap-x-6 gap-y-2 list-disc list-inside text-grey-600 text-sm">
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 list-disc list-inside text-grey-600 text-sm">
                       {service.items.map((item, idx) => (
                         <li key={idx} className="capitalize">
                           {item}
@@ -345,7 +345,7 @@ export default function Home() {
             Let's bring your vision to life. From video production to web development and design, we're here to help.
           </p>
           <div className="scroll-animate" style={{ animationDelay: '0.4s' }}>
-            <Button asChild size="lg" variant="outline" className="text-base px-8 py-6 h-auto bg-transparent border-white text-white hover:bg-white hover:text-black hover:scale-105 active:scale-100 transition-all duration-300 before:hover:from-white/60 before:hover:via-white/25">
+            <Button asChild size="lg" variant="outline" className="text-base px-8 py-6 h-auto">
               <Link href="/book">
                 Start a Project
                 <ArrowRight className="ml-2" size={20} />

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Facebook, Instagram, Mail } from 'lucide-react'
 import Image from 'next/image'
+import { Button } from '@/components/ui/button'
 
 // WhatsApp Icon Component
 const WhatsAppIcon = ({ size = 18 }: { size?: number }) => (
@@ -97,12 +98,11 @@ export default function Footer() {
                                 <span>Diffindo.lk</span>
                             </a>
                         </div>
-                        <Link
-                            href="/book"
-                            className="inline-block px-6 py-2 text-sm font-semibold uppercase tracking-wider bg-white text-black hover:opacity-90 hover:scale-105 hover:brightness-110 active:scale-100 transition-all duration-300 relative overflow-hidden rounded-md before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/40 before:via-white/15 before:to-transparent before:pointer-events-none before:rounded-md after:absolute after:inset-0 after:bg-gradient-to-t after:from-black/10 after:via-transparent after:to-transparent after:pointer-events-none after:rounded-md before:hover:from-white/60 before:hover:via-white/25 shadow-lg shadow-black/20"
-                        >
-                            Start a Project
-                        </Link>
+                        <Button asChild variant="outline" size="default" className="text-sm px-6 py-2 h-auto">
+                            <Link href="/book">
+                                Start a Project
+                            </Link>
+                        </Button>
                     </div>
                 </div>
 
