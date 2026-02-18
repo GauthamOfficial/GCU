@@ -2,11 +2,26 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowRight, ChevronLeft, ChevronRight, Facebook, Instagram, Mail } from "lucide-react"
 import { Testimonial, PortfolioItem } from '@/lib/types'
 import { createClient } from '@/lib/supabase/client'
 import { convertMediaUrl } from '@/lib/utils'
+
+// WhatsApp Icon Component
+const WhatsAppIcon = ({ size = 18 }: { size?: number }) => (
+    <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+        className="shrink-0"
+    >
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+)
 
 export default function Home() {
   const observerRef = useRef<IntersectionObserver | null>(null)
@@ -127,24 +142,81 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
 
         {/* Glass Morphism Content Container */}
-        <div className="relative z-10 w-[calc(100%-2rem)] max-w-6xl mx-auto text-center backdrop-blur-sm sm:backdrop-blur-md bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl py-8 px-6 sm:py-12 sm:px-8 md:px-16 md:py-16 lg:px-24 shadow-2xl glass-morphism-animate">
-          <h1 className="mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-            Creative Studio For 
-            <br />Visual & Digital Experiences
+        <div className="relative z-10 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] max-w-6xl mx-auto text-center backdrop-blur-sm sm:backdrop-blur-md bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl py-10 px-6 sm:py-12 sm:px-8 md:px-16 md:py-16 lg:px-24 shadow-2xl glass-morphism-animate">
+          {/* Logo and Brand Name */}
+          <div className="flex items-end justify-center gap-2 mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14">
+              <Image
+                src="/Diffindo Logo.png"
+                alt="Diffindo Logo"
+                fill
+                className="object-contain invert"
+              />
+            </div>
+            <span className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight font-poppins translate-y-1 text-white">Diffindo.</span>
+          </div>
+          <h1 className="text-2xl md:text-4xl lg:text-5xl mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
+          Visual Storytelling & Digital Experiences
           </h1>
-          <p className="text-base md:text-lg lg:text-xl text-grey-300 mb-12 mx-auto opacity-0 animate-fade-in-up uppercase tracking-wider px-4" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-            Cinematic Video Production | Professional Video Editing
-            <br />
-            Web Development | Graphic Design
-          </p>
+          <div className="text-sm md:text-base lg:text-lg text-grey-300 mb-8 mx-auto opacity-0 animate-fade-in-up uppercase tracking-wider px-4 space-y-2 md:space-y-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
+            <div className="block md:hidden">
+              <div>Promotion Video</div>
+              <div>Video Editing</div>
+              <div>Web Development</div>
+              <div>Graphic Design</div>
+            </div>
+            <div className="hidden md:block">
+              Promotion Video | Video Editing |
+              Web Development | Graphic Design
+            </div>
+          </div>
+          
+          {/* Social Media Icons */}
+          <div className="flex items-center justify-center gap-4 mb-12 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+            <a
+              href="https://wa.me/94704462999"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="WhatsApp"
+            >
+              <WhatsAppIcon size={20} />
+            </a>
+            <a
+              href="mailto:hello.diffindo@gmail.com"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="Email"
+            >
+              <Mail size={20} />
+            </a>
+            <a
+              href="https://www.facebook.com/share/1875QM56TV/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="Facebook"
+            >
+              <Facebook size={20} />
+            </a>
+            <a
+              href="https://www.instagram.com/diffindo.lk?igsh=NmdlcDcxYms1enZ2"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-white transition-colors"
+              aria-label="Instagram"
+            >
+              <Instagram size={20} />
+            </a>
+          </div>
+          
           <div className="flex flex-col sm:flex-row gap-4 justify-center opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
-            <Button asChild size="lg" className="text-base px-8 py-6 h-auto hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-all duration-300">
+            <Button asChild size="lg" className="text-base px-8 py-6 h-auto hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] hover:scale-105 hover:brightness-110 active:scale-100 transition-all duration-300 before:hover:from-white/50 before:hover:via-white/20">
               <Link href="/book">
                 Start a Project
                 <ArrowRight className="ml-2" size={20} />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 h-auto bg-transparent border-white text-white hover:bg-white hover:text-black">
+            <Button asChild variant="outline" size="lg" className="text-base px-8 py-6 h-auto bg-transparent border-white text-white hover:bg-white hover:text-black hover:scale-105 active:scale-100 transition-all duration-300 before:hover:from-white/60 before:hover:via-white/25">
               <Link href="/portfolio">
                 View Work
               </Link>
@@ -273,7 +345,7 @@ export default function Home() {
             Let's bring your vision to life. From video production to web development and design, we're here to help.
           </p>
           <div className="scroll-animate" style={{ animationDelay: '0.4s' }}>
-            <Button asChild size="lg" variant="outline" className="text-base px-8 py-6 h-auto bg-transparent border-white text-white hover:bg-white hover:text-black">
+            <Button asChild size="lg" variant="outline" className="text-base px-8 py-6 h-auto bg-transparent border-white text-white hover:bg-white hover:text-black hover:scale-105 active:scale-100 transition-all duration-300 before:hover:from-white/60 before:hover:via-white/25">
               <Link href="/book">
                 Start a Project
                 <ArrowRight className="ml-2" size={20} />
