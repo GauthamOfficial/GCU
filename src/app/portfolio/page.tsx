@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import { PortfolioItem } from '@/lib/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { ExternalLink } from 'lucide-react'
 
 const mainCategories = ['All', 'Video Projects', 'Web Projects', 'Design Projects'] as const
 const videoSubCategories = ['Birthday', 'Pre-shoot', 'Traditional', 'Event', 'Music Video', 'Travel Highlights', 'Wedding Highlights', 'Promotion Videos'] as const
@@ -218,21 +219,38 @@ function PortfolioContent() {
                     <DialogHeader>
                         <DialogTitle className="text-2xl">{selectedItem?.title}</DialogTitle>
                     </DialogHeader>
-                    {selectedItem && (
-                        <div className="space-y-4">
-                            <div className="aspect-video bg-black">
-                                <iframe
-                                    src={convertMediaUrl(selectedItem.video_url)}
-                                    className="w-full h-full"
-                                    allow="autoplay"
-                                    allowFullScreen
-                                />
+                    {selectedItem && (() => {
+                        const isWebProject = ['Web Project', 'Web Development', 'Design', 'Graphic Design'].includes(selectedItem.category)
+                        const embedUrl = convertMediaUrl(selectedItem.video_url)
+                        return (
+                            <div className="space-y-4">
+                                {isWebProject && (
+                                    <Button
+                                        asChild
+                                        variant="outline"
+                                        size="sm"
+                                        className="shrink-0"
+                                    >
+                                        <a href={embedUrl} target="_blank" rel="noopener noreferrer">
+                                            Open website <ExternalLink className="ml-1.5 size-4" />
+                                        </a>
+                                    </Button>
+                                )}
+                                <div className="aspect-video bg-black">
+                                    <iframe
+                                        src={embedUrl}
+                                        className="w-full h-full"
+                                        allow="autoplay"
+                                        allowFullScreen
+                                        title={selectedItem.title}
+                                    />
+                                </div>
+                                {selectedItem.description && (
+                                    <p className="text-muted-foreground">{selectedItem.description}</p>
+                                )}
                             </div>
-                            {selectedItem.description && (
-                                <p className="text-muted-foreground">{selectedItem.description}</p>
-                            )}
-                        </div>
-                    )}
+                        )
+                    })()}
                 </DialogContent>
             </Dialog>
         </div>
